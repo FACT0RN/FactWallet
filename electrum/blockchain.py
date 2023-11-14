@@ -69,12 +69,14 @@ def deserialize_header(s: bytes, height: int) -> dict:
         raise InvalidHeader('Invalid header length: {}'.format(len(s)))
     hex_to_int = lambda s: int.from_bytes(s, byteorder='little')
     h = {}
-    h['version'] = hex_to_int(s[0:4])
-    h['prev_block_hash'] = hash_encode(s[4:36])
-    h['merkle_root'] = hash_encode(s[36:68])
-    h['timestamp'] = hex_to_int(s[68:72])
-    h['bits'] = hex_to_int(s[72:76])
-    h['nonce'] = hex_to_int(s[76:80])
+    h['nP1']             = rev_hex(s[0:128].hex())
+    h['prev_block_hash'] = hash_encode(s[128:160])
+    h['merkle_root']     = hash_encode(s[160:192])
+    h['nonce']           = hex_to_int(s[192:200])
+    h['wOffset']         = hex_to_int(s[200:208])
+    h['version']         = hex_to_int(s[208:212])
+    h['timestamp']       = hex_to_int(s[212:216])
+    h['bits']            = hex_to_int(s[216:218])
     h['block_height'] = height
     return h
 
