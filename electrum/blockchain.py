@@ -52,12 +52,14 @@ class InvalidHeader(Exception):
     pass
 
 def serialize_header(header_dict: dict) -> str:
-    s = int_to_hex(header_dict['version'], 4) \
+    s =   rev_hex(header_dict['nP1'])\
         + rev_hex(header_dict['prev_block_hash']) \
         + rev_hex(header_dict['merkle_root']) \
+        + int_to_hex(header_dict['nonce'], 8) \
+        + int_to_hex(header_dict['wOffset'], 8) \
+        + int_to_hex(header_dict['version'], 4) \
         + int_to_hex(int(header_dict['timestamp']), 4) \
-        + int_to_hex(int(header_dict['bits']), 4) \
-        + int_to_hex(int(header_dict['nonce']), 4)
+        + int_to_hex(int(header_dict['bits']), 2) 
     return s
 
 def deserialize_header(s: bytes, height: int) -> dict:
