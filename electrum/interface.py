@@ -627,17 +627,17 @@ class Interface(Logger):
     async def request_chunk(self, height: int, tip=None, *, can_return_early=False):
         if not is_non_negative_integer(height):
             raise Exception(f"{repr(height)} is not a block height")
-        index = height // 2016
+        index = height // 672
         if can_return_early and index in self._requested_chunks:
             return
         self.logger.info(f"requesting chunk from height {height}")
-        size = 2016
+        size = 672
         if tip is not None:
-            size = min(size, tip - index * 2016 + 1)
+            size = min(size, tip - index * 672 + 1)
             size = max(size, 0)
         try:
             self._requested_chunks.add(index)
-            res = await self.session.send_request('blockchain.block.headers', [index * 2016, size])
+            res = await self.session.send_request('blockchain.block.headers', [index * 672, size])
         finally:
             self._requested_chunks.discard(index)
         assert_dict_contains_field(res, field_name='count')
@@ -648,9 +648,9 @@ class Interface(Logger):
         assert_hex_str(res['hex'])
         if len(res['hex']) != HEADER_SIZE * 2 * res['count']:
             raise RequestCorrupted('inconsistent chunk hex and count')
-        # we never request more than 2016 headers, but we enforce those fit in a single response
-        if res['max'] < 2016:
-            raise RequestCorrupted(f"server uses too low 'max' count for block.headers: {res['max']} < 2016")
+        # we never request more than 672 headers, but we enforce those fit in a single response
+        if res['max'] < 672:
+            raise RequestCorrupted(f"server uses too low 'max' count for block.headers: {res['max']} < 672")
         if res['count'] != size:
             raise RequestCorrupted(f"expected {size} headers but only got {res['count']}")
         conn = self.blockchain.connect_chunk(index, res['hex'])
@@ -797,7 +797,7 @@ class Interface(Logger):
                     last, height = await self.step(height)
                     continue
                 util.trigger_callback('network_updated')
-                height = (height // 2016 * 2016) + num_headers
+                height = (height // 672 * 672) + num_headers
                 assert height <= next_height+1, (height, self.tip)
                 last = 'catchup'
             else:
