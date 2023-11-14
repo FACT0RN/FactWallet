@@ -559,26 +559,6 @@ class Blockchain(Logger):
 
         return new_target
 
-    @classmethod
-    def bits_to_target(cls, bits: int) -> int:
-        # arith_uint256::SetCompact in Bitcoin Core
-        if not (0 <= bits < (1 << 32)):
-            raise InvalidHeader(f"bits should be uint32. got {bits!r}")
-        bitsN = (bits >> 24) & 0xff
-        bitsBase = bits & 0x7fffff
-        if bitsN <= 3:
-            target = bitsBase >> (8 * (3-bitsN))
-        else:
-            target = bitsBase << (8 * (bitsN-3))
-        if target != 0 and bits & 0x800000 != 0:
-            # Bit number 24 (0x800000) represents the sign of N
-            raise InvalidHeader("target cannot be negative")
-        if (target != 0 and
-                (bitsN > 34 or
-                 (bitsN > 33 and bitsBase > 0xff) or
-                 (bitsN > 32 and bitsBase > 0xffff))):
-            raise InvalidHeader("target has overflown")
-        return target
 
     @classmethod
     def target_to_bits(cls, target: int) -> int:
