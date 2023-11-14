@@ -539,23 +539,24 @@ class Blockchain(Logger):
             return 0
         if index == -1:
             return MAX_TARGET
-        if index < len(self.checkpoints):
-            h, t = self.checkpoints[index]
-            return t
+
         # new target
         first = self.read_header(index * 672)
         last = self.read_header(index * 672 + 671)
         if not first or not last:
             raise MissingHeader()
-        bits = last.get('bits')
-        target = self.bits_to_target(bits)
+
         nActualTimespan = last.get('timestamp') - first.get('timestamp')
         nTargetTimespan = 14 * 24 * 60 * 60
-        nActualTimespan = max(nActualTimespan, nTargetTimespan // 4)
-        nActualTimespan = min(nActualTimespan, nTargetTimespan * 4)
-        new_target = min(MAX_TARGET, (target * nActualTimespan) // nTargetTimespan)
-        # not any target can be represented in 32 bits:
-        new_target = self.bits_to_target(self.target_to_bits(new_target))
+        nRatio = nActualTimespan/nTargetTimespan
+        new_target = last.get("bits")
+
+        #Retarget
+        if nRatio > 1.0333:
+            new_target -= 1
+        elif nRatio < 0.90:
+            new_target += 1
+
         return new_target
 
     @classmethod
