@@ -39,9 +39,11 @@ _logger = get_logger(__name__)
 
 HEADER_SIZE = 218  # bytes
 
-# see https://github.com/bitcoin/bitcoin/blob/feedb9c84e72e4fff489810a2bbeec09bcda5763/src/chainparams.cpp#L76
-MAX_TARGET = 0x00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff  # compact: 0x1d00ffff
-
+# see https://github.com/FACT0RN/FACT0RN/blob/main/src/chainparams.cpp#L85
+# FACT0RN is the opposite of bitcoin in this regard, we do not have a maximum
+# value for a hash, but rather a minimum value for factorization measured in bits.
+# TODO: change MAX_TARGET variable name to MIN_TARGET everywhere it is used.
+MAX_TARGET = 230
 
 class MissingHeader(Exception):
     pass
