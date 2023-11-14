@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 
 _logger = get_logger(__name__)
 
-HEADER_SIZE = 80  # bytes
+HEADER_SIZE = 218  # bytes
 
 # see https://github.com/bitcoin/bitcoin/blob/feedb9c84e72e4fff489810a2bbeec09bcda5763/src/chainparams.cpp#L76
 MAX_TARGET = 0x00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff  # compact: 0x1d00ffff
