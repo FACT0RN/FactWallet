@@ -318,7 +318,9 @@ class Network(Logger, NetworkRetryManager[ServerAddr]):
         self.interfaces_lock = threading.Lock()            # for mutating/iterating self.interfaces
 
         self.server_peers = {}  # returned by interface (servers that the main interface knows about)
-        self._recent_servers = self._read_recent_servers()  # note: needs self.recent_servers_lock
+        self._recent_servers = [] #self._read_recent_servers()  # note: needs self.recent_servers_lock
+                                # Note: This is done to stay out of the normal electrum network as we
+                                #       are not compatible with any other coin.
 
         self.banner = ''
         self.donation_address = ''
@@ -549,18 +551,8 @@ class Network(Logger, NetworkRetryManager[ServerAddr]):
         server_peers = self.server_peers
         if server_peers:
             out.update(filter_version(server_peers.copy()))
-        # hardcoded servers
-        out.update(constants.net.DEFAULT_SERVERS)
-        # add recent servers
-        for server in self._recent_servers:
-            port = str(server.port)
-            if server.host in out:
-                out[server.host].update({server.protocol: port})
-            else:
-                out[server.host] = {server.protocol: port}
-        # potentially filter out some
-        if self.config.NETWORK_NOONION:
-            out = filter_noonion(out)
+        
+        out = constants.net.DEFAULT_SERVERS
         return out
 
     def _get_next_server_to_try(self) -> Optional[ServerAddr]:
