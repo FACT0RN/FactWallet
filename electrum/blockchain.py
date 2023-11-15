@@ -31,6 +31,7 @@ from .crypto import sha256d
 from . import constants
 from .util import bfh, with_lock
 from .logging import get_logger, Logger
+from .gHash import gHash
 
 if TYPE_CHECKING:
     from .simple_config import SimpleConfig
@@ -68,12 +69,14 @@ def deserialize_header(s: bytes, height: int) -> dict:
     if len(s) != HEADER_SIZE:
         raise InvalidHeader('Invalid header length: {}'.format(len(s)))
     hex_to_int = lambda s: int.from_bytes(s, byteorder='little')
+    hex_to_sint = lambda s: int.from_bytes(s, byteorder='little', signed=True)
     h = {}
     h['nP1']             = rev_hex(s[0:128].hex())
+    h['nP1_int']         = hex_to_int(s[0:128])  ##This is for doing math, same as above
     h['prev_block_hash'] = hash_encode(s[128:160])
     h['merkle_root']     = hash_encode(s[160:192])
     h['nonce']           = hex_to_int(s[192:200])
-    h['wOffset']         = hex_to_int(s[200:208])
+    h['wOffset']         = hex_to_sint(s[200:208])
     h['version']         = hex_to_int(s[208:212])
     h['timestamp']       = hex_to_int(s[212:216])
     h['bits']            = hex_to_int(s[216:218])
@@ -87,13 +90,10 @@ def hash_header(header: dict) -> str:
         header['prev_block_hash'] = '00'*32
     return hash_raw_header(serialize_header(header))
 
-
 def hash_raw_header(header: str) -> str:
     return hash_encode(sha256d(bfh(header)))
 
-
 pow_hash_header = hash_header
-
 
 # key: blockhash hex at forkpoint
 # the chain at some key is the best chain that includes the given hash
