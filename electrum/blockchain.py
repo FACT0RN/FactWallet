@@ -32,6 +32,7 @@ from . import constants
 from .util import bfh, with_lock
 from .logging import get_logger, Logger
 from .gHash import gHash
+from sympy import isprime
 
 if TYPE_CHECKING:
     from .simple_config import SimpleConfig
@@ -319,12 +320,38 @@ class Blockchain(Logger):
         _pow_hash = header["nP1"]
         pow_hash_as_num = int.from_bytes(bfh(_pow_hash), byteorder='big').bit_length()
 
-        #TODO: 1) Implement ghash purely in python to do full verification.
-        #      2) Do the full npowcheck that the blockchain does.
-        #      Note: This MUST be done before making a release of the wallet.
-
+        #Check enough work has been done
         if not ( pow_hash_as_num != target//2  or pow_hash_as_num != target//2 - 1):
             raise InvalidHeader(f"insufficient proof of work: {pow_hash_as_num} vs target {target}")
+
+        #Validate block chaining to previous block
+        W = gHash(header)
+        nP1 = header["nP1_int"]
+        n = W + header["wOffset"]
+        nP2 = n//nP1
+        
+        nBits = n.bit_length()
+        expected_bitsize = ( nBits >> 1) + (nBits & 1)
+        p1Bits = nP1.bit_length()
+
+        if n.bit_length() != bits:
+            raise InvalidHeader(f"Expected difficulty {bits} but found difficulty { nBits }")
+
+        if nP1 > nP2:
+            raise InvalidHeader(f"The smallest factor must be submitted.")
+
+        if isprime(nP1) == False :
+            raise InvalidHeader(f"nP1 = { nP1 } is not prime")
+        
+        if isprime(nP2) == False :
+            raise InvalidHeader(f" (W+wOffset)/nP1 = { nP2 } is not prime")
+        
+        if p1Bits != expected_bitsize:
+            raise InvalidHeader(f" Expected block solution nP1 to be {expected_bitsize} bits long not {p1Bits}.")
+
+        if (n%nP1)!= 0:
+            raise InvalidHeader(f"nP1 = { nP1 } does not divide block W + wOffset = { n }")
+
 
     def verify_chunk(self, index: int, data: bytes) -> None:
         num = len(data) // HEADER_SIZE
