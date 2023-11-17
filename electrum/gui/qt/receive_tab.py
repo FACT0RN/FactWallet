@@ -207,7 +207,7 @@ class ReceiveTab(QWidget, MessageBoxMixin, Logger):
     def update_view_button(self):
         i = self.config.GUI_QT_RECEIVE_TABS_INDEX
         if i == 0:
-            icon, text = read_QIcon("link.png"), _('Bitcoin URI')
+            icon, text = read_QIcon("link.png"), _('FACT0RN URI')
         elif i == 1:
             icon, text = read_QIcon("bitcoin.png"), _('Address')
         elif i == 2:
@@ -283,7 +283,7 @@ class ReceiveTab(QWidget, MessageBoxMixin, Logger):
     def get_tab_data(self):
         i = self.config.GUI_QT_RECEIVE_TABS_INDEX
         if i == 0:
-            out = self.URI, self.URI, self.URI_help, _('Bitcoin URI')
+            out = self.URI, self.URI, self.URI_help, _('FACT0RN URI')
         elif i == 1:
             out = self.addr, self.addr, self.address_help, _('Address')
         elif i == 2:
