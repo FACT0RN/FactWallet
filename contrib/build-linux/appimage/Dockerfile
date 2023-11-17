@@ -81,4 +81,6 @@ RUN usermod -append --groups sudo ${USER}
 RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 WORKDIR ${WORK_DIR}
 RUN chown --recursive ${USER} ${WORK_DIR}
+RUN apt update &&  apt install -y python3-pip 
+RUN pip3 install sympy mpmath
 USER ${USER}
