@@ -9,10 +9,11 @@ PYTHON_VERSION=3.10.11
 
 # Let's begin!
 set -e
-
 here="$(dirname "$(readlink -e "$0")")"
 
 . "$CONTRIB"/build_tools_util.sh
+
+pip install railroad
 
 info "Booting wine."
 wine 'wineboot'
@@ -20,6 +21,7 @@ wine 'wineboot'
 
 cd "$CACHEDIR"
 mkdir -p $WINEPREFIX/drive_c/tmp
+mkdir -p $WINEPREFIX/drive_c/python3/lib/site-packages/electrum/ 
 
 info "Installing Python."
 # note: you might need "sudo apt-get install dirmngr" for the following
@@ -53,10 +55,11 @@ $WINE_PYTHON -m pip install --no-build-isolation --no-dependencies --no-binary :
 
 
 # copy already built DLLs
+
+cp "$DLL_TARGET_DIR"/libsecp256k1-*.dll $WINEPREFIX/drive_c/python3/lib/site-packages/electrum/ || fail "Could not copy libsecp to its destination"
 cp "$DLL_TARGET_DIR"/libsecp256k1-*.dll $WINEPREFIX/drive_c/tmp/ || fail "Could not copy libsecp to its destination"
 cp "$DLL_TARGET_DIR/libzbar-0.dll" $WINEPREFIX/drive_c/tmp/ || fail "Could not copy libzbar to its destination"
 cp "$DLL_TARGET_DIR/libusb-1.0.dll" $WINEPREFIX/drive_c/tmp/ || fail "Could not copy libusb to its destination"
-
 
 info "Building PyInstaller."
 # we build our own PyInstaller boot loader as the default one has high

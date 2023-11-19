@@ -3,6 +3,7 @@
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules, collect_dynamic_libs
 
 import sys, os
+sys.setrecursionlimit(sys.getrecursionlimit() * 5)
 
 cmdline_name = os.environ.get("ELECTRUM_CMDLINE_NAME")
 if not cmdline_name:
@@ -21,6 +22,9 @@ hiddenimports += collect_submodules('keepkeylib')
 hiddenimports += collect_submodules('websocket')
 hiddenimports += collect_submodules('ckcc')
 hiddenimports += collect_submodules('bitbox02')
+hiddenimports += ['electrum.gui.common_qt']
+hiddenimports += ['electrum.gui.common_qt.plugins']
+hiddenimports += ['electrum.plugins.jade']
 hiddenimports += ['electrum.plugins.jade.jade']
 hiddenimports += ['electrum.plugins.jade.jadepy.jade']
 hiddenimports += ['PyQt5.QtPrintSupport']  # needed by Revealer
@@ -58,6 +62,7 @@ a = Analysis([home+'run_electrum',
               home+'electrum/gui/text.py',
               home+'electrum/util.py',
               home+'electrum/wallet.py',
+              home+'electrum/plugin.py',
               home+'electrum/simple_config.py',
               home+'electrum/bitcoin.py',
               home+'electrum/dnssec.py',
@@ -74,7 +79,7 @@ a = Analysis([home+'run_electrum',
               ],
              binaries=binaries,
              datas=datas,
-             #pathex=[home+'lib', home+'gui', home+'plugins'],
+             pathex=[home+'lib', home+'gui', home+'plugins'],
              hiddenimports=hiddenimports,
              hookspath=[])
 
