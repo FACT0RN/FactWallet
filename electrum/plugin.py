@@ -94,7 +94,7 @@ class Plugins(DaemonThread):
                 except Exception as e:
                     raise Exception(f"Error pre-loading {full_name}: {repr(e)}") from e
                 d = module.__dict__
-                assert name not in cls._all_found_plugins
+                #assert name not in cls._all_found_plugins
                 cls._all_found_plugins[name] = d
         return cls._all_found_plugins
 
