@@ -1,13 +1,14 @@
-# FactWallet based on the Electrum - Lightweight Bitcoin client
-
+# Lightweigth FactWallet 
 ```
 Licence: MIT Licence
-Author: Escanor Liones
 Language: Python (>= 3.8)
 Homepage: https://www.fact0rn.io
 ```
 
 ## Getting started
+
+Based on the Bitcoin Electrum Lightweight wallet. See the Contributing section below.
+There is still a lot of work that needs to be done.
 
 Electrum itself is pure Python, and so are most of the required dependencies,
 but not everything. The following sections describe how to run from source, but here
@@ -102,6 +103,8 @@ $ ./run_electrum
 
 ### Run tests
 
+TODO: tests need to be redone for the Fact0rn blockchain.
+
 Run unit tests with `pytest`:
 ```
 $ pytest electrum/tests -v
@@ -123,13 +126,14 @@ $ pytest electrum/tests/test_bitcoin.py -v
 
 ## Contributing
 
+
+
 Any help testing the software, reporting or fixing bugs, reviewing pull requests
 and recent changes, writing tests, or helping with outstanding issues is very welcome.
 Implementing new features, or improving/refactoring the codebase, is of course
 also welcome, but to avoid wasted effort, especially for larger changes,
-we encourage discussing these on the issue tracker or IRC first.
+we encourage discussing these on the issue tracker or Discord first.
 
-Besides [GitHub](https://github.com/spesmilo/electrum),
-most communication about Electrum development happens on IRC, in the
-`#electrum` channel on Libera Chat. The easiest way to participate on IRC is
-with the web client, [web.libera.chat](https://web.libera.chat/#electrum).
+Besides [GitHub](https://github.com/FACT0RN/FactWallet),
+most communication about Electrum development happens on Discord, in the
+`Fact0rn` [server](https://discord.gg/Mfzp2QtmQG). 
