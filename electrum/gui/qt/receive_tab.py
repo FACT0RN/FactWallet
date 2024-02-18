@@ -187,9 +187,8 @@ class ReceiveTab(QWidget, MessageBoxMixin, Logger):
             '\n\n',
             _('For on-chain requests, the address gets reserved until expiration. After that, it might get reused.'), ' ',
             _('The bitcoin address never expires and will always be part of this electrum wallet.'), ' ',
-            _('You can reuse a bitcoin address any number of times but it is not good for your privacy.'),
+            _('You can reuse a fact0rn address any number of times but it is not good for your privacy.'),
             '\n\n',
-            _('For Lightning requests, payments will not be accepted after the expiration.'),
         ])
         expiry = self.config.WALLET_PAYREQ_EXPIRY_SECONDS
         v = self.window.query_choice(msg, pr_expiration_values, title=_('Expiry'), default_choice=expiry)
@@ -207,11 +206,11 @@ class ReceiveTab(QWidget, MessageBoxMixin, Logger):
     def update_view_button(self):
         i = self.config.GUI_QT_RECEIVE_TABS_INDEX
         if i == 0:
-            icon, text = read_QIcon("link.png"), _('FACT0RN URI')
+            icon, text = read_QIcon("bitcoin.png"), _('Address')
         elif i == 1:
             icon, text = read_QIcon("bitcoin.png"), _('Address')
         elif i == 2:
-            icon, text = read_QIcon("lightning.png"), _('Lightning')
+            icon, text = read_QIcon("bitcoin.png"), _('Address')
         self.toggle_view_button.setText(text)
         self.toggle_view_button.setIcon(icon)
 
@@ -283,13 +282,11 @@ class ReceiveTab(QWidget, MessageBoxMixin, Logger):
     def get_tab_data(self):
         i = self.config.GUI_QT_RECEIVE_TABS_INDEX
         if i == 0:
-            out = self.URI, self.URI, self.URI_help, _('FACT0RN URI')
+             out = self.addr, self.addr, self.address_help, _('Address')
         elif i == 1:
             out = self.addr, self.addr, self.address_help, _('Address')
         elif i == 2:
-            # encode lightning invoices as uppercase so QR encoding can use
-            # alphanumeric mode; resulting in smaller QR codes
-            out = self.lnaddr, self.lnaddr.upper(), self.ln_help, _('Lightning Request')
+            out = self.addr, self.addr, self.address_help, _('Address')
         return out
 
     def update_receive_qr_window(self):
