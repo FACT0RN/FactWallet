@@ -98,7 +98,7 @@ from .confirm_tx_dialog import ConfirmTxDialog
 from .rbf_dialog import BumpFeeDialog, DSCancelDialog
 from .qrreader import scan_qrcode
 from .swap_dialog import SwapDialog, InvalidSwapParameters
-from .balance_dialog import BalanceToolButton, COLOR_FROZEN, COLOR_UNMATURED, COLOR_UNCONFIRMED, COLOR_CONFIRMED, COLOR_LIGHTNING, COLOR_FROZEN_LIGHTNING
+from .balance_dialog import BalanceToolButton, COLOR_FROZEN, COLOR_UNMATURED, COLOR_UNCONFIRMED, COLOR_CONFIRMED
 
 if TYPE_CHECKING:
     from electrum.simple_config import ConfigVarWithConfig
@@ -173,8 +173,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         self.gui_thread = gui_object.gui_thread
         assert wallet, "no wallet"
         self.wallet = wallet
-        if wallet.has_lightning() and not self.config.cv.GUI_QT_SHOW_TAB_CHANNELS.is_set():
-            self.config.GUI_QT_SHOW_TAB_CHANNELS = True  # override default, but still allow disabling tab manually
+        
 
         Exception_Hook.maybe_setup(config=self.config, wallet=self.wallet)
 
@@ -224,7 +223,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
                 tabs.addTab(tab, icon, description.replace("&", ""))
 
         add_optional_tab(tabs, self.addresses_tab, read_QIcon("tab_addresses.png"), _("&Addresses"))
-        add_optional_tab(tabs, self.channels_tab, read_QIcon("lightning.png"), _("Channels"))
+    
         add_optional_tab(tabs, self.utxo_tab, read_QIcon("tab_coins.png"), _("Co&ins"))
         add_optional_tab(tabs, self.contacts_tab, read_QIcon("tab_contacts.png"), _("Con&tacts"))
         add_optional_tab(tabs, self.console_tab, read_QIcon("tab_console.png"), _("Con&sole"))
@@ -279,25 +278,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         gui_object.timer.timeout.connect(self.timer_actions)
         self.contacts.fetch_openalias(self.config)
 
-        # If the option hasn't been set yet
-        if not config.cv.AUTOMATIC_CENTRALIZED_UPDATE_CHECKS.is_set():
-            choice = self.question(title="Electrum - " + _("Enable update check"),
-                                   msg=_("For security reasons we advise that you always use the latest version of Electrum.") + " " +
-                                       _("Would you like to be notified when there is a newer version of Electrum available?"))
-            config.AUTOMATIC_CENTRALIZED_UPDATE_CHECKS = bool(choice)
 
-        self._update_check_thread = None
-        if config.AUTOMATIC_CENTRALIZED_UPDATE_CHECKS:
-            # The references to both the thread and the window need to be stored somewhere
-            # to prevent GC from getting in our way.
-            def on_version_received(v):
-                if UpdateCheck.is_newer(v):
-                    self.update_check_button.setText(_("Update to Electrum {} is available").format(v))
-                    self.update_check_button.clicked.connect(lambda: self.show_update_check(v))
-                    self.update_check_button.show()
-            self._update_check_thread = UpdateCheckThread()
-            self._update_check_thread.checked.connect(on_version_received)
-            self._update_check_thread.start()
+
 
     def run_coroutine_dialog(self, coro, text, on_result, on_cancelled):
         """ run coroutine in a waiting dialog, with a Cancel button that cancels the coroutine """
@@ -488,9 +470,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
     def on_event_fee_histogram(self, *args):
         self.history_model.on_fee_histogram()
 
-    @qt_event_listener
-    def on_event_ln_gossip_sync_progress(self, *args):
-        self.update_lightning_icon()
+
 
     @qt_event_listener
     def on_event_cert_mismatch(self, *args):
@@ -504,8 +484,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
     @profiler
     def load_wallet(self, wallet: Abstract_Wallet):
         self.update_recently_visited(wallet.storage.path)
-        if wallet.has_lightning():
-            util.trigger_callback('channels_updated', wallet)
+  
         self.need_update.set()
         # Once GUI has been initialized check if we want to announce something since the callback has been called before the GUI was initialized
         # update menus
@@ -620,12 +599,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         backup_dir = self.config.WALLET_BACKUP_DIRECTORY
         backup_dir_label = HelpLabel(_('Backup directory') + ':', backup_help)
         msg = _('Please select a backup directory')
-        if self.wallet.has_lightning() and self.wallet.lnworker.channels:
-            msg += '\n\n' + ' '.join([
-                _("Note that lightning channels will be converted to channel backups."),
-                _("You cannot use channel backups to perform lightning payments."),
-                _("Channel backups can only be used to request your channels to be closed.")
-            ])
+        
         self.backup_dir_e = QPushButton(backup_dir)
         self.backup_dir_e.clicked.connect(self.select_backup_dir)
         grid.addWidget(backup_dir_label, 1, 0)
@@ -803,8 +777,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
                 f.write(bytes.fromhex(out))
         webopen('file:///' + filename)
 
-    def show_update_check(self, version=None):
-        self.gui_object._update_check = UpdateCheck(latest_version=version)
+ 
 
     def show_report_bug(self):
         msg = ' '.join([
@@ -977,16 +950,15 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
                 icon = read_QIcon("status_lagging%s.png"%fork_str)
             else:
                 network_text = _("Connected")
-                confirmed, unconfirmed, unmatured, frozen, lightning, f_lightning = self.wallet.get_balances_for_piechart()
+                confirmed, unconfirmed, unmatured, frozen = self.wallet.get_balances_for_piechart()
                 self.balance_label.update_list([
                     (_('Frozen'), COLOR_FROZEN, frozen),
                     (_('Unmatured'), COLOR_UNMATURED, unmatured),
                     (_('Unconfirmed'), COLOR_UNCONFIRMED, unconfirmed),
                     (_('On-chain'), COLOR_CONFIRMED, confirmed),
-                    (_('Lightning'), COLOR_LIGHTNING, lightning),
-                    (_('Lightning frozen'), COLOR_FROZEN_LIGHTNING, f_lightning),
+            
                 ])
-                balance = confirmed + unconfirmed + unmatured + frozen + lightning + f_lightning
+                balance = confirmed + unconfirmed + unmatured + frozen 
                 balance_text =  _("Balance") + ": %s "%(self.format_amount_and_units(balance))
                 # append fiat balance and price
                 if self.fx.is_enabled():
@@ -1094,10 +1066,6 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
     ):
         show_transaction(tx, parent=self, external_keypairs=external_keypairs, payment_identifier=payment_identifier)
 
-    def show_lightning_transaction(self, tx_item):
-        from .lightning_tx_dialog import LightningTxDialog
-        d = LightningTxDialog(self, tx_item)
-        d.show()
 
     def create_receive_tab(self):
         from .receive_tab import ReceiveTab
@@ -1154,10 +1122,10 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
             self.show_error(_("You are offline."))
             return
         if not self.wallet.lnworker:
-            self.show_error(_('Lightning is disabled'))
+            self.show_error(_('Lightning not supported.'))
             return
         if not self.wallet.lnworker.num_sats_can_send() and not self.wallet.lnworker.num_sats_can_receive():
-            self.show_error(_("You do not have liquidity in your active channels."))
+            self.show_error(_("Lightning not supported."))
             return
         def get_pairs_thread():
             self.network.run_from_another_thread(self.wallet.lnworker.swap_manager.get_pairs())
@@ -1213,16 +1181,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         self.need_update.set()
 
     @qt_event_listener
-    def on_event_payment_failed(self, wallet, key, reason):
-        if wallet != self.wallet:
-            return
-        invoice = self.wallet.get_invoice(key)
-        if invoice and invoice.is_lightning() and invoice.get_address():
-            # fixme: we should display this popup only if the user initiated the payment
-            if self.question(_('Payment failed') + '\n\n' + reason + '\n\n'+ 'Fallback to onchain payment?'):
-                self.send_tab.pay_onchain_dialog(invoice.get_outputs())
-        else:
-            self.notify(_('Payment failed') + '\n\n' + reason)
+   
 
     def get_coins(self, **kwargs) -> Sequence[PartialTxInput]:
         coins = self.get_manually_selected_coins()
@@ -1497,51 +1456,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         vbox.addLayout(buttons)
         d.exec_()
 
-    def show_lightning_invoice(self, invoice: Invoice):
-        from electrum.util import format_short_id
-        lnaddr = lndecode(invoice.lightning_invoice)
-        d = WindowModalDialog(self, _("Lightning Invoice"))
-        vbox = QVBoxLayout(d)
-        grid = QGridLayout()
-        pubkey_e = ShowQRLineEdit(lnaddr.pubkey.serialize().hex(), self.config, title=_("Public Key"))
-        pubkey_e.setMinimumWidth(700)
-        grid.addWidget(QLabel(_("Public Key") + ':'), 0, 0)
-        grid.addWidget(pubkey_e, 0, 1)
-        grid.addWidget(QLabel(_("Amount") + ':'), 1, 0)
-        amount_str = self.format_amount(invoice.get_amount_sat()) + ' ' + self.base_unit()
-        grid.addWidget(QLabel(amount_str), 1, 1)
-        grid.addWidget(QLabel(_("Description") + ':'), 2, 0)
-        grid.addWidget(QLabel(invoice.message), 2, 1)
-        grid.addWidget(QLabel(_("Creation time") + ':'), 3, 0)
-        grid.addWidget(QLabel(format_time(invoice.time)), 3, 1)
-        if invoice.exp:
-            grid.addWidget(QLabel(_("Expiration time") + ':'), 4, 0)
-            grid.addWidget(QLabel(format_time(invoice.time + invoice.exp)), 4, 1)
-        grid.addWidget(QLabel(_('Features') + ':'), 5, 0)
-        grid.addWidget(QLabel(', '.join(lnaddr.get_features().get_names())), 5, 1)
-        payhash_e = ShowQRLineEdit(lnaddr.paymenthash.hex(), self.config, title=_("Payment Hash"))
-        grid.addWidget(QLabel(_("Payment Hash") + ':'), 6, 0)
-        grid.addWidget(payhash_e, 6, 1)
-        fallback = lnaddr.get_fallback_address()
-        if fallback:
-            fallback_e = ShowQRLineEdit(fallback, self.config, title=_("Fallback address"))
-            grid.addWidget(QLabel(_("Fallback address") + ':'), 7, 0)
-            grid.addWidget(fallback_e, 7, 1)
-        invoice_e = ShowQRTextEdit(config=self.config)
-        invoice_e.setFont(QFont(MONOSPACE_FONT))
-        invoice_e.addCopyButton()
-        invoice_e.setText(invoice.lightning_invoice)
-        grid.addWidget(QLabel(_('Text') + ':'), 8, 0)
-        grid.addWidget(invoice_e, 8, 1)
-        r_tags = lnaddr.get_routing_info('r')
-        r_tags = '\n'.join(repr([(x[0].hex(), format_short_id(x[1]), x[2], x[3]) for x in r]) for r in r_tags)
-        routing_e = QTextEdit(str(r_tags))
-        routing_e.setReadOnly(True)
-        grid.addWidget(QLabel(_("Routing Hints") + ':'), 9, 0)
-        grid.addWidget(routing_e, 9, 1)
-        vbox.addLayout(grid)
-        vbox.addLayout(Buttons(CloseButton(d),))
-        d.exec_()
+    
 
     def create_console_tab(self):
         from .console import Console
@@ -1629,9 +1544,9 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         sb.addPermanentWidget(StatusBarButton(read_QIcon("preferences.png"), _("Preferences"), self.settings_dialog, sb_height))
         self.seed_button = StatusBarButton(read_QIcon("seed.png"), _("Seed"), self.show_seed_dialog, sb_height)
         sb.addPermanentWidget(self.seed_button)
-        self.lightning_button = StatusBarButton(read_QIcon("lightning.png"), _("Lightning Network"), self.gui_object.show_lightning_dialog, sb_height)
-        sb.addPermanentWidget(self.lightning_button)
-        self.update_lightning_icon()
+        
+ 
+      
         self.status_button = None
         if self.network:
             self.status_button = StatusBarButton(read_QIcon("status_disconnected.png"), _("Network"), self.gui_object.show_network_dialog, sb_height)
@@ -1666,29 +1581,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         self.coincontrol_label.setText(msg)
         self.coincontrol_sb.setVisible(True)
 
-    def update_lightning_icon(self):
-        if not self.wallet.has_lightning():
-            self.lightning_button.setVisible(False)
-            return
-        if self.network is None or self.network.channel_db is None:
-            self.lightning_button.setVisible(False)
-            return
-        self.lightning_button.setVisible(True)
 
-        cur, total, progress_percent = self.network.lngossip.get_sync_progress_estimate()
-        # self.logger.debug(f"updating lngossip sync progress estimate: cur={cur}, total={total}")
-        progress_str = "??%"
-        if progress_percent is not None:
-            progress_str = f"{progress_percent}%"
-        if progress_percent and progress_percent >= 100:
-            self.lightning_button.setMaximumWidth(25)
-            self.lightning_button.setText('')
-            self.lightning_button.setToolTip(_("The Lightning Network graph is fully synced."))
-        else:
-            self.lightning_button.setMaximumWidth(25 + 5 * char_width_in_lineedit())
-            self.lightning_button.setText(progress_str)
-            self.lightning_button.setToolTip(_("The Lightning Network graph is syncing...\n"
-                                               "Payments are more likely to succeed with a more complete graph."))
+
 
     def update_lock_icon(self):
         icon = read_QIcon("lock.png") if self.wallet.has_password() else read_QIcon("unlock.png")
@@ -1754,7 +1648,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
     def new_channel_dialog(self, *, amount_sat=None, min_amount_sat=None):
         from electrum.lnutil import MIN_FUNDING_SAT
         from .new_channel_dialog import NewChannelDialog
-        confirmed, unconfirmed, unmatured, frozen, lightning, f_lightning = self.wallet.get_balances_for_piechart()
+        confirmed, unconfirmed, unmatured = self.wallet.get_balances_for_piechart()
         min_amount_sat = min_amount_sat or MIN_FUNDING_SAT
         if confirmed < min_amount_sat:
             msg = _('Not enough funds') + '\n\n' + _('You need at least {} to open a channel.').format(self.format_amount_and_units(min_amount_sat))
@@ -1762,7 +1656,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
             return
         lnworker = self.wallet.lnworker
         if not lnworker.channels and not lnworker.channel_backups:
-            msg = _('Do you want to create your first channel?') + '\n\n' + messages.MSG_LIGHTNING_WARNING
+            msg = _('Lightning not supported.') + '\n\n' + messages.MSG_LIGHTNING_WARNING
             if not self.question(msg):
                 return
         d = NewChannelDialog(self, amount_sat, min_amount_sat)
@@ -1786,26 +1680,9 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         if d.exec_():
             self.set_contact(line2.text(), line1.text())
 
-    def init_lightning_dialog(self, dialog):
-        assert not self.wallet.has_lightning()
-        if self.wallet.can_have_deterministic_lightning():
-            msg = _(
-                "Lightning is not enabled because this wallet was created with an old version of Electrum. "
-                "Create lightning keys?")
-        else:
-            msg = _(
-                "Warning: this wallet type does not support channel recovery from seed. "
-                "You will need to backup your wallet everytime you create a new channel. "
-                "Create lightning keys?")
-        if self.question(msg):
-            self._init_lightning_dialog(dialog=dialog)
 
     @protected
-    def _init_lightning_dialog(self, *, dialog, password):
-        dialog.close()
-        self.wallet.init_lightning(password=password)
-        self.update_lightning_icon()
-        self.show_message(_('Lightning keys have been initialized.'))
+
 
     def show_wallet_info(self):
         from .wallet_info_dialog import WalletInfoDialog
@@ -2060,17 +1937,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
             self.show_critical(_("Electrum was unable to parse your transaction") + ":\n" + repr(e))
             return
 
-    def import_channel_backup(self, encrypted: str):
-        if not self.question('Import channel backup?'):
-            return
-        if not self.wallet.lnworker:
-            self.show_error(_('Lightning is disabled'))
-            return
-        try:
-            self.wallet.lnworker.import_channel_backup(encrypted)
-        except Exception as e:
-            self.show_error("failed to import backup" + '\n' + str(e))
-            return
+    
 
     def read_tx_from_qrcode(self):
         def cb(success: bool, error: str, data):
@@ -2707,14 +2574,3 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
             return
         d = RebalanceDialog(self, chan1, chan2, amount_sat)
         d.run()
-
-    def on_swap_result(self, txid):
-        msg = _("Submarine swap") + ': ' + (_("Success") if txid else _("Expired")) + '\n\n'
-        if txid:
-            msg += _("Funding transaction") + ': ' + txid + '\n'
-            msg += _("Please remain online until the funding transaction is confirmed.")
-            self.show_message_signal.emit(msg)
-        else:
-            msg += _("Lightning funds were not received.")
-            self.show_error_signal.emit(msg)
-
