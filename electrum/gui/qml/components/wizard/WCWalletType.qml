@@ -35,12 +35,7 @@ WizardComponent {
             checked: true
             text: qsTr('Standard Wallet')
         }
-        ElRadioButton {
-            Layout.fillWidth: true
-            ButtonGroup.group: wallettypegroup
-            property string wallettype: '2fa'
-            text: qsTr('Wallet with two-factor authentication')
-        }
+
         ElRadioButton {
             Layout.fillWidth: true
             ButtonGroup.group: wallettypegroup
