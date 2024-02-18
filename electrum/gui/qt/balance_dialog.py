@@ -49,8 +49,7 @@ COLOR_CONFIRMED = Qt.green
 COLOR_UNCONFIRMED = Qt.red
 COLOR_UNMATURED = Qt.magenta
 COLOR_FROZEN = ColorScheme.BLUE.as_color(True)
-COLOR_LIGHTNING = Qt.yellow
-COLOR_FROZEN_LIGHTNING = Qt.cyan
+
 
 class PieChartObject:
 
@@ -153,21 +152,19 @@ class BalanceDialog(WindowModalDialog):
         self.config = parent.config
         self.fx = parent.fx
 
-        confirmed, unconfirmed, unmatured, frozen, lightning, f_lightning = self.wallet.get_balances_for_piechart()
+        confirmed, unconfirmed, unmatured, frozen = self.wallet.get_balances_for_piechart()
 
         frozen_str =  self.config.format_amount_and_units(frozen)
         confirmed_str =  self.config.format_amount_and_units(confirmed)
         unconfirmed_str =  self.config.format_amount_and_units(unconfirmed)
         unmatured_str =  self.config.format_amount_and_units(unmatured)
-        lightning_str =  self.config.format_amount_and_units(lightning)
-        f_lightning_str =  self.config.format_amount_and_units(f_lightning)
+
 
         frozen_fiat_str = self.fx.format_amount_and_units(frozen) if self.fx else ''
         confirmed_fiat_str = self.fx.format_amount_and_units(confirmed) if self.fx else ''
         unconfirmed_fiat_str = self.fx.format_amount_and_units(unconfirmed) if self.fx else ''
         unmatured_fiat_str = self.fx.format_amount_and_units(unmatured) if self.fx else ''
-        lightning_fiat_str = self.fx.format_amount_and_units(lightning) if self.fx else ''
-        f_lightning_fiat_str = self.fx.format_amount_and_units(f_lightning) if self.fx else ''
+
 
         piechart = PieChartWidget(
             max(120, 9 * font_height()),
@@ -176,8 +173,7 @@ class BalanceDialog(WindowModalDialog):
                 (_('Unmatured'), COLOR_UNMATURED, unmatured),
                 (_('Unconfirmed'), COLOR_UNCONFIRMED, unconfirmed),
                 (_('On-chain'), COLOR_CONFIRMED, confirmed),
-                (_('Lightning'), COLOR_LIGHTNING, lightning),
-                (_('Lightning frozen'), COLOR_FROZEN_LIGHTNING, f_lightning),
+
             ]
         )
 
@@ -208,16 +204,7 @@ class BalanceDialog(WindowModalDialog):
             grid.addWidget(QLabel(_("On-chain") + ':'), 1, 1)
             grid.addWidget(AmountLabel(confirmed_str), 1, 2, alignment=Qt.AlignRight)
             grid.addWidget(AmountLabel(confirmed_fiat_str), 1, 3, alignment=Qt.AlignRight)
-        if lightning:
-            grid.addWidget(LegendWidget(COLOR_LIGHTNING), 4, 0)
-            grid.addWidget(QLabel(_("Lightning") + ':'), 4, 1)
-            grid.addWidget(AmountLabel(lightning_str), 4, 2, alignment=Qt.AlignRight)
-            grid.addWidget(AmountLabel(lightning_fiat_str), 4, 3, alignment=Qt.AlignRight)
-        if f_lightning:
-            grid.addWidget(LegendWidget(COLOR_FROZEN_LIGHTNING), 5, 0)
-            grid.addWidget(QLabel(_("Lightning (frozen)") + ':'), 5, 1)
-            grid.addWidget(AmountLabel(f_lightning_str), 5, 2, alignment=Qt.AlignRight)
-            grid.addWidget(AmountLabel(f_lightning_fiat_str), 5, 3, alignment=Qt.AlignRight)
+
 
         vbox.addLayout(grid)
         vbox.addStretch(1)
