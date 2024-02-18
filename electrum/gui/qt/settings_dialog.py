@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (QComboBox,  QTabWidget, QDialog,
 
 from electrum.i18n import _, languages
 from electrum import util, paymentrequest
-from electrum.util import base_explorer_list, event_listener
+from electrum.util import base_units_list, event_listener
 
 from electrum.gui import messages
 
@@ -111,19 +111,77 @@ class SettingsDialog(QDialog, QtEventListener):
                 self.app.update_status_signal.emit()
         nz.valueChanged.connect(on_nz)
 
-      
+        # lightning
+        trampoline_cb = checkbox_from_configvar(self.config.cv.LIGHTNING_USE_GOSSIP)
+        trampoline_cb.setChecked(not self.config.LIGHTNING_USE_GOSSIP)
+        def on_trampoline_checked(use_trampoline):
+            use_trampoline = bool(use_trampoline)
+            if not use_trampoline:
+                if not window.question('\n'.join([
+                        _("Are you sure you want to disable trampoline?"),
+                        _("Without this option, Electrum will need to sync with the Lightning network on every start."),
+                        _("This may impact the reliability of your payments."),
+                ])):
+                    trampoline_cb.setCheckState(Qt.Checked)
+                    return
+            self.config.LIGHTNING_USE_GOSSIP = not use_trampoline
+            if not use_trampoline:
+                self.network.start_gossip()
+            else:
+                self.network.run_from_another_thread(
+                    self.network.stop_gossip())
+            util.trigger_callback('ln_gossip_sync_progress')
+            # FIXME: update all wallet windows
+            util.trigger_callback('channels_updated', self.wallet)
+        trampoline_cb.stateChanged.connect(on_trampoline_checked)
 
-        # explorer
-        explorer = base_explorer_list
+        legacy_add_trampoline_cb = checkbox_from_configvar(self.config.cv.LIGHTNING_LEGACY_ADD_TRAMPOLINE)
+        legacy_add_trampoline_cb.setChecked(self.config.LIGHTNING_LEGACY_ADD_TRAMPOLINE)
+        def on_legacy_add_trampoline_checked(b):
+            self.config.LIGHTNING_LEGACY_ADD_TRAMPOLINE = bool(b)
+        legacy_add_trampoline_cb.stateChanged.connect(on_legacy_add_trampoline_checked)
+
+        remote_wt_cb = checkbox_from_configvar(self.config.cv.WATCHTOWER_CLIENT_ENABLED)
+        remote_wt_cb.setChecked(self.config.WATCHTOWER_CLIENT_ENABLED)
+        def on_remote_wt_checked(x):
+            self.config.WATCHTOWER_CLIENT_ENABLED = bool(x)
+            self.watchtower_url_e.setEnabled(bool(x))
+        remote_wt_cb.stateChanged.connect(on_remote_wt_checked)
+        watchtower_url = self.config.WATCHTOWER_CLIENT_URL
+        self.watchtower_url_e = QLineEdit(watchtower_url)
+        self.watchtower_url_e.setEnabled(self.config.WATCHTOWER_CLIENT_ENABLED)
+        def on_wt_url():
+            url = self.watchtower_url_e.text() or None
+            self.config.WATCHTOWER_CLIENT_URL = url
+        self.watchtower_url_e.editingFinished.connect(on_wt_url)
+
+        alias_label = HelpLabel.from_configvar(self.config.cv.OPENALIAS_ID)
+        alias = self.config.OPENALIAS_ID
+        self.alias_e = QLineEdit(alias)
+        self.set_alias_color()
+        self.alias_e.editingFinished.connect(self.on_alias_edit)
+
+        msat_cb = checkbox_from_configvar(self.config.cv.BTC_AMOUNTS_PREC_POST_SAT)
+        msat_cb.setChecked(self.config.BTC_AMOUNTS_PREC_POST_SAT > 0)
+        def on_msat_checked(v):
+            prec = 3 if v == Qt.Checked else 0
+            if self.config.amt_precision_post_satoshi != prec:
+                self.config.amt_precision_post_satoshi = prec
+                self.config.BTC_AMOUNTS_PREC_POST_SAT = prec
+                self.app.refresh_tabs_signal.emit()
+        msat_cb.stateChanged.connect(on_msat_checked)
+
+        # units
+        units = base_units_list
         msg = (_('Base unit of your wallet.')
-               + '\n1 FACT = 1000 mFACT. 1 mFACT = 1000 bits. 1 bit = 100 sat.\n'
+               + '\n1 BTC = 1000 mBTC. 1 mBTC = 1000 bits. 1 bit = 100 sat.\n'
                + _('This setting affects the Send tab, and all balance related fields.'))
         unit_label = HelpLabel(_('Base unit') + ':', msg)
         unit_combo = QComboBox()
-        unit_combo.addItems(explorer)
-        unit_combo.setCurrentIndex(explorer.index(self.config.get_base_unit()))
+        unit_combo.addItems(units)
+        unit_combo.setCurrentIndex(units.index(self.config.get_base_unit()))
         def on_unit(x, nz):
-            unit_result = explorer[unit_combo.currentIndex()]
+            unit_result = units[unit_combo.currentIndex()]
             if self.config.get_base_unit() == unit_result:
                 return
             self.config.set_base_unit(unit_result)
@@ -166,14 +224,13 @@ class SettingsDialog(QDialog, QtEventListener):
             self.config.GUI_QT_COLOR_THEME = colortheme_combo.itemData(x)
             self.need_restart = True
         colortheme_combo.currentIndexChanged.connect(on_colortheme)
-        
-###Deleted auto-update toggle, so I don't think the below is necessary.
+
         updatecheck_cb = checkbox_from_configvar(self.config.cv.AUTOMATIC_CENTRALIZED_UPDATE_CHECKS)
         updatecheck_cb.setChecked(self.config.AUTOMATIC_CENTRALIZED_UPDATE_CHECKS)
         def on_set_updatecheck(v):
             self.config.AUTOMATIC_CENTRALIZED_UPDATE_CHECKS = (v == Qt.Checked)
         updatecheck_cb.stateChanged.connect(on_set_updatecheck)
-###
+
         filelogging_cb = checkbox_from_configvar(self.config.cv.WRITE_LOGS_TO_DISK)
         filelogging_cb.setChecked(self.config.WRITE_LOGS_TO_DISK)
         def on_set_filelogging(v):
@@ -290,11 +347,16 @@ class SettingsDialog(QDialog, QtEventListener):
         units_widgets.append((nz_label, nz))
         units_widgets.append((msat_cb, None))
         units_widgets.append((thousandsep_cb, None))
+        lightning_widgets = []
+        lightning_widgets.append((trampoline_cb, None))
+        lightning_widgets.append((legacy_add_trampoline_cb, None))
+        lightning_widgets.append((remote_wt_cb, self.watchtower_url_e))
         fiat_widgets = []
         fiat_widgets.append((QLabel(_('Fiat currency')), ccy_combo))
         fiat_widgets.append((QLabel(_('Source')), ex_combo))
         fiat_widgets.append((self.history_rates_cb, None))
         misc_widgets = []
+        misc_widgets.append((updatecheck_cb, None))
         misc_widgets.append((filelogging_cb, None))
         misc_widgets.append((alias_label, self.alias_e))
         misc_widgets.append((qr_label, qr_combo))
@@ -303,6 +365,7 @@ class SettingsDialog(QDialog, QtEventListener):
             (gui_widgets, _('Appearance')),
             (units_widgets, _('Units')),
             (fiat_widgets, _('Fiat')),
+            (lightning_widgets, _('Lightning')),
             (misc_widgets, _('Misc')),
         ]
         for widgets, name in tabs_info:
