@@ -347,7 +347,7 @@ class Network(Logger, NetworkRetryManager[ServerAddr]):
         self._set_status(ConnectionState.DISCONNECTED)
         self._has_ever_managed_to_connect_to_server = False
         self._was_started = False
-        #self.export_checkpoints("checkpoint_CHECK.json")
+        self.export_checkpoints("checkpoint_CHECK.json")
 
         # lightning network
         if self.config.WATCHTOWER_SERVER_ENABLED:
