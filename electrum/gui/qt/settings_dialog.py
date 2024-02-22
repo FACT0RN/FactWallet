@@ -111,7 +111,7 @@ class SettingsDialog(QDialog, QtEventListener):
                 self.app.update_status_signal.emit()
         nz.valueChanged.connect(on_nz)
 
-     alias_label = HelpLabel.from_configvar(self.config.cv.OPENALIAS_ID)
+        alias_label = HelpLabel.from_configvar(self.config.cv.OPENALIAS_ID)
         alias = self.config.OPENALIAS_ID
         self.alias_e = QLineEdit(alias)
         self.set_alias_color()
