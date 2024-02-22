@@ -436,16 +436,16 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
     def on_event_on_history(self, *args):
         self.on_fx_history()
 
-    @qt_event_listener
-    def on_event_gossip_db_loaded(self, *args):
-        self.channels_list.gossip_db_loaded.emit(*args)
+    #@qt_event_listener
+    #def on_event_gossip_db_loaded(self, *args):
+    #    self.channels_list.gossip_db_loaded.emit(*args)
 
-    @qt_event_listener
-    def on_event_channel(self, *args):
-        wallet = args[0]
-        if wallet == self.wallet:
-            self.channels_list.update_single_row.emit(*args)
-            self.update_status()
+    #qt_event_listener
+    #def on_event_channel(self, *args):
+    #    wallet = args[0]
+    #    if wallet == self.wallet:
+    #        self.channels_list.update_single_row.emit(*args)
+    #        self.update_status()
 
     @qt_event_listener
     def on_event_banner(self, *args):
@@ -1009,7 +1009,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         self.address_list.update()
         self.utxo_list.update()
         self.contact_list.update()
-        self.channels_list.update_rows.emit(wallet)
+        #self.channels_list.update_rows.emit(wallet)
         self.update_completions()
 
     def refresh_tabs(self, wallet=None):
@@ -1019,11 +1019,11 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         self.address_list.refresh_all()
         self.utxo_list.refresh_all()
         self.contact_list.refresh_all()
-        self.channels_list.update_rows.emit(self.wallet)
+        #self.channels_list.update_rows.emit(self.wallet)
 
     def create_channels_tab(self):
-        self.channels_list = ChannelsList(self)
-        tab = self.create_list_tab(self.channels_list)
+        #self.channels_list = ChannelsList(self)
+        #tab = self.create_list_tab(self.channels_list)
         tab.is_shown_cv = self.config.cv.GUI_QT_SHOW_TAB_CHANNELS
         return tab
 
