@@ -299,10 +299,6 @@ class SettingsDialog(QDialog, QtEventListener):
         units_widgets.append((nz_label, nz))
         units_widgets.append((msat_cb, None))
         units_widgets.append((thousandsep_cb, None))
-        lightning_widgets = []
-        lightning_widgets.append((trampoline_cb, None))
-        lightning_widgets.append((legacy_add_trampoline_cb, None))
-        lightning_widgets.append((remote_wt_cb, self.watchtower_url_e))
         fiat_widgets = []
         fiat_widgets.append((QLabel(_('Fiat currency')), ccy_combo))
         fiat_widgets.append((QLabel(_('Source')), ex_combo))
@@ -317,7 +313,6 @@ class SettingsDialog(QDialog, QtEventListener):
             (gui_widgets, _('Appearance')),
             (units_widgets, _('Units')),
             (fiat_widgets, _('Fiat')),
-            (lightning_widgets, _('Lightning')),
             (misc_widgets, _('Misc')),
         ]
         for widgets, name in tabs_info:
