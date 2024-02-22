@@ -189,7 +189,7 @@ class ReceiveTab(QWidget, MessageBoxMixin, Logger):
             _('The bitcoin address never expires and will always be part of this electrum wallet.'), ' ',
             _('You can reuse a bitcoin address any number of times but it is not good for your privacy.'),
             '\n\n',
-            _('For Lightning requests, payments will not be accepted after the expiration.'),
+            _('Lightning not supported.'),
         ])
         expiry = self.config.WALLET_PAYREQ_EXPIRY_SECONDS
         v = self.window.query_choice(msg, pr_expiration_values, title=_('Expiry'), default_choice=expiry)
@@ -212,8 +212,8 @@ class ReceiveTab(QWidget, MessageBoxMixin, Logger):
             icon, text = read_QIcon("bitcoin.png"), _('Address')
         elif i == 2:
             icon, text = read_QIcon("lightning.png"), _('Lightning')
-        self.toggle_view_button.setText(text)
-        self.toggle_view_button.setIcon(icon)
+      #  self.toggle_view_button.setText(text)
+      #  self.toggle_view_button.setIcon(icon)
 
     def toggle_view(self):
         i = self.config.GUI_QT_RECEIVE_TABS_INDEX
