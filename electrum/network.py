@@ -299,6 +299,11 @@ class Network(Logger, NetworkRetryManager[ServerAddr]):
 
         blockchain.read_blockchains(self.config)
         blockchain.init_headers_file_for_best_chain()
+        
+        # new target
+        first = self.read_header(index * 672)
+        last = self.read_header(index * 672 + 671)
+        
         self.logger.info(f"blockchains {list(map(lambda b: b.forkpoint, blockchain.blockchains.values()))}")
         self._blockchain_preferred_block = self.config.BLOCKCHAIN_PREFERRED_BLOCK  # type: Dict[str, Any]
         if self._blockchain_preferred_block is None:
@@ -347,7 +352,7 @@ class Network(Logger, NetworkRetryManager[ServerAddr]):
         self._set_status(ConnectionState.DISCONNECTED)
         self._has_ever_managed_to_connect_to_server = False
         self._was_started = False
-        #self.export_checkpoints("checkpoint_CHECK.json")
+        self.export_checkpoints("electrum/checkpoints.json")
 
         # lightning network
         if self.config.WATCHTOWER_SERVER_ENABLED:

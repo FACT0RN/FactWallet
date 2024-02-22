@@ -20,8 +20,8 @@ from electrum._vendor.distutils.version import StrictVersion
 
 
 class UpdateCheck(QDialog, Logger):
-    url = "https://electrum.org/version"
-    download_url = "https://electrum.org/#download"
+    url = "https://github.com/FACT0RN/FactWallet/releases"
+    download_url = "https://github.com/FACT0RN/FactWallet/releases"
 
     VERSION_ANNOUNCEMENT_SIGNING_KEYS = (
         "13xjmVAB1EATPP8RshTE8S8sNwwSUM9p1P",  # ThomasV (since 3.3.4)
@@ -78,20 +78,6 @@ class UpdateCheck(QDialog, Logger):
     def is_newer(latest_version):
         return latest_version > StrictVersion(version.ELECTRUM_VERSION)
 
-    def update_view(self, latest_version=None):
-        if latest_version:
-            self.pb.hide()
-            self.latest_version_label.setText(_("Latest version: {}".format(latest_version)))
-            if self.is_newer(latest_version):
-                self.heading_label.setText('<h2>' + _("There is a new update available") + '</h2>')
-                url = "<a href='{u}'>{u}</a>".format(u=UpdateCheck.download_url)
-                self.detail_label.setText(_("You can download the new version from {}.").format(url))
-            else:
-                self.heading_label.setText('<h2>' + _("Already up to date") + '</h2>')
-                self.detail_label.setText(_("You are already on the latest version of Electrum."))
-        else:
-            self.heading_label.setText('<h2>' + _("Checking for updates...") + '</h2>')
-            self.detail_label.setText(_("Please wait while Electrum checks for available updates."))
 
 
 class UpdateCheckThread(QThread, Logger):
