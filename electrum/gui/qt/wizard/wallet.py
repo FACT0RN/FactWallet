@@ -390,9 +390,8 @@ class WCWalletType(WizardComponent):
         message = _('What kind of wallet do you want to create?')
         wallet_kinds = [
             ('standard',  _('Standard wallet')),
-            ('2fa',       _('Wallet with two-factor authentication')),
             ('multisig',  _('Multi-signature wallet')),
-            ('imported',  _('Import Bitcoin addresses or private keys')),
+            ('imported',  _('Import Fact0rn addresses or private keys')),
         ]
         choices = [pair for pair in wallet_kinds if pair[0] in wallet_types]
 
@@ -412,8 +411,8 @@ class WCKeystoreType(WizardComponent):
         choices = [
             ('createseed', _('Create a new seed')),
             ('haveseed',   _('I already have a seed')),
-            ('masterkey',  _('Use a master key')),
-            ('hardware',   _('Use a hardware device'))
+      #      ('masterkey',  _('Use a master key')),
+      #      ('hardware',   _('Use a hardware device'))
         ]
 
         self.choice_w = ChoiceWidget(message=message, choices=choices)
@@ -922,7 +921,7 @@ class WCMultisig(WizardComponent):
 
 class WCImport(WizardComponent):
     def __init__(self, parent, wizard):
-        WizardComponent.__init__(self, parent, wizard, title=_('Import Bitcoin Addresses or Private Keys'))
+        WizardComponent.__init__(self, parent, wizard, title=_('Import Fact0rn Addresses or Private Keys'))
         message = _(
             'Enter a list of Bitcoin addresses (this will create a watching-only wallet), or a list of private keys.')
         header_layout = QHBoxLayout()

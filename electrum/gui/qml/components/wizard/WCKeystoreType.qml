@@ -36,20 +36,20 @@ WizardComponent {
             property string keystoretype: 'haveseed'
             text: qsTr('I already have a seed')
         }
-        ElRadioButton {
-            Layout.fillWidth: true
-            ButtonGroup.group: keystoregroup
-            property string keystoretype: 'masterkey'
-            text: qsTr('Use a master key')
-        }
-        ElRadioButton {
-            Layout.fillWidth: true
-            enabled: false
-            visible: false
-            ButtonGroup.group: keystoregroup
-            property string keystoretype: 'hardware'
-            text: qsTr('Use a hardware device')
-        }
+        #ElRadioButton {
+        #    Layout.fillWidth: true
+        #    ButtonGroup.group: keystoregroup
+        #    property string keystoretype: 'masterkey'
+        #    text: qsTr('Use a master key')
+        #}
+        #ElRadioButton {
+        #    Layout.fillWidth: true
+        #    enabled: false
+        #    visible: false
+        #    ButtonGroup.group: keystoregroup
+        #    property string keystoretype: 'hardware'
+        #    text: qsTr('Use a hardware device')
+        #}
     }
 }
 
