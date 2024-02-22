@@ -441,12 +441,6 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         self.channels_list.gossip_db_loaded.emit(*args)
 
     @qt_event_listener
-    def on_event_channels_updated(self, *args):
-        wallet = args[0]
-        if wallet == self.wallet:
-            self.channels_list.update_rows.emit(*args)
-
-    @qt_event_listener
     def on_event_channel(self, *args):
         wallet = args[0]
         if wallet == self.wallet:
