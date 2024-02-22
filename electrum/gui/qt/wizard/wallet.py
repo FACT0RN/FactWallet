@@ -411,8 +411,8 @@ class WCKeystoreType(WizardComponent):
         choices = [
             ('createseed', _('Create a new seed')),
             ('haveseed',   _('I already have a seed')),
-            ('masterkey',  _('Use a master key')),
-            ('hardware',   _('Use a hardware device'))
+      #      ('masterkey',  _('Use a master key')),
+      #      ('hardware',   _('Use a hardware device'))
         ]
 
         self.choice_w = ChoiceWidget(message=message, choices=choices)
