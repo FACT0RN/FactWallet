@@ -1107,7 +1107,7 @@ This will result in longer routes; it might increase your fees and decrease the 
     )
     
     BTC_AMOUNTS_PREC_POST_SAT = ConfigVar(	
-        #'amt_precision_post_satoshi', default=0, type_=str,	
+        'amt_precision_post_satoshi', default=0, type_=str,	
         short_desc=lambda: _("Lightning not supported."),	
     )
     
