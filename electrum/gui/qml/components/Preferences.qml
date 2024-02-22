@@ -15,7 +15,7 @@ Pane {
 
     padding: 0
 
-    property var _baseunits: ['BTC','mBTC','bits','sat']
+    property var _baseunits: ['FACT','mFACT','bits','sat']
 
     ColumnLayout {
         anchors.fill: parent
@@ -89,7 +89,7 @@ Pane {
                         }
                         Label {
                             Layout.fillWidth: true
-                            text: qsTr('Add thousands separators to bitcoin amounts')
+                            text: qsTr('Add thousands separators to Fact0rn amounts')
                             wrapMode: Text.Wrap
                         }
                     }
@@ -253,98 +253,7 @@ Pane {
                         }
                     }
 
-                    PrefsHeading {
-                        Layout.columnSpan: 2
-                        text: qsTr('Lightning')
-                    }
-
-                    RowLayout {
-                        Layout.columnSpan: 2
-                        Layout.fillWidth: true
-                        spacing: 0
-                        Switch {
-                            id: useTrampolineRouting
-                            onCheckedChanged: {
-                                if (activeFocus) {
-                                    if (!checked) {
-                                        var dialog = app.messageDialog.createObject(app, {
-                                            title: qsTr('Are you sure?'),
-                                            text: qsTr('Electrum will have to download the Lightning Network graph, which is not recommended on mobile.'),
-                                            yesno: true
-                                        })
-                                        dialog.accepted.connect(function() {
-                                            Config.useGossip = true
-                                        })
-                                        dialog.rejected.connect(function() {
-                                            checked = true // revert
-                                        })
-                                        dialog.open()
-                                    } else {
-                                        Config.useGossip = !checked
-                                    }
-                                }
-
-                            }
-                        }
-                        Label {
-                            Layout.fillWidth: true
-                            text: qsTr('Trampoline routing')
-                            wrapMode: Text.Wrap
-                        }
-                    }
-
-                    RowLayout {
-                        Layout.columnSpan: 2
-                        Layout.fillWidth: true
-                        spacing: 0
-                        Switch {
-                            id: useRecoverableChannels
-                            onCheckedChanged: {
-                                if (activeFocus) {
-                                    if (!checked) {
-                                        var dialog = app.messageDialog.createObject(app, {
-                                            title: qsTr('Are you sure?'),
-                                            text: qsTr('This option allows you to recover your lightning funds if you lose your device, or if you uninstall this app while lightning channels are active. Do not disable it unless you know how to recover channels from backups.'),
-                                            yesno: true
-                                        })
-                                        dialog.accepted.connect(function() {
-                                            Config.useRecoverableChannels = false
-                                        })
-                                        dialog.rejected.connect(function() {
-                                            checked = true // revert
-                                        })
-                                        dialog.open()
-                                    } else {
-                                        Config.useRecoverableChannels = checked
-                                    }
-                                }
-                            }
-                        }
-                        Label {
-                            Layout.fillWidth: true
-                            text: qsTr('Create recoverable channels')
-                            wrapMode: Text.Wrap
-                        }
-                    }
-
-                    RowLayout {
-                        Layout.columnSpan: 2
-                        Layout.fillWidth: true
-                        spacing: 0
-                        Switch {
-                            id: useFallbackAddress
-                            onCheckedChanged: {
-                                if (activeFocus)
-                                    Config.useFallbackAddress = checked
-                            }
-                        }
-                        Label {
-                            Layout.fillWidth: true
-                            text: qsTr('Create lightning invoices with on-chain fallback address')
-                            wrapMode: Text.Wrap
-                        }
-                    }
-
+                  
                     PrefsHeading {
                         Layout.columnSpan: 2
                         text: qsTr('Advanced')
@@ -389,7 +298,6 @@ Pane {
         rateSources.currentIndex = rateSources.indexOfValue(Daemon.fx.rateSource)
         fiatEnable.checked = Daemon.fx.enabled
         spendUnconfirmed.checked = Config.spendUnconfirmed
-        useTrampolineRouting.checked = !Config.useGossip
         useFallbackAddress.checked = Config.useFallbackAddress
         enableDebugLogs.checked = Config.enableDebugLogs
         useRecoverableChannels.checked = Config.useRecoverableChannels
