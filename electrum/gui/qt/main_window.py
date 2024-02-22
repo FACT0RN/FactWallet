@@ -1600,7 +1600,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         self.seed_button = StatusBarButton(read_QIcon("seed.png"), _("Seed"), self.show_seed_dialog, sb_height)
         sb.addPermanentWidget(self.seed_button)
        
-        self.update_lightning_icon()
+        
         self.status_button = None
         if self.network:
             self.status_button = StatusBarButton(read_QIcon("status_disconnected.png"), _("Network"), self.gui_object.show_network_dialog, sb_height)
