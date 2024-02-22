@@ -174,7 +174,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         assert wallet, "no wallet"
         self.wallet = wallet
         if wallet.has_lightning() and not self.config.cv.GUI_QT_SHOW_TAB_CHANNELS.is_set():
-            self.config.GUI_QT_SHOW_TAB_CHANNELS = True  # override default, but still allow disabling tab manually
+            self.config.GUI_QT_SHOW_TAB_CHANNELS = False  # override default, but still allow disabling tab manually
 
         Exception_Hook.maybe_setup(config=self.config, wallet=self.wallet)
 
@@ -211,7 +211,6 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         self.utxo_tab = self.create_utxo_tab()
         self.console_tab = self.create_console_tab()
         self.contacts_tab = self.create_contacts_tab()
-        self.channels_tab = self.create_channels_tab()
         tabs.addTab(self.create_history_tab(), read_QIcon("tab_history.png"), _('History'))
         tabs.addTab(self.send_tab, read_QIcon("tab_send.png"), _('Send'))
         tabs.addTab(self.receive_tab, read_QIcon("tab_receive.png"), _('Receive'))
@@ -224,7 +223,6 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
                 tabs.addTab(tab, icon, description.replace("&", ""))
 
         add_optional_tab(tabs, self.addresses_tab, read_QIcon("tab_addresses.png"), _("&Addresses"))
-        add_optional_tab(tabs, self.channels_tab, read_QIcon("lightning.png"), _("Channels"))
         add_optional_tab(tabs, self.utxo_tab, read_QIcon("tab_coins.png"), _("Co&ins"))
         add_optional_tab(tabs, self.contacts_tab, read_QIcon("tab_contacts.png"), _("Con&tacts"))
         add_optional_tab(tabs, self.console_tab, read_QIcon("tab_console.png"), _("Con&sole"))
@@ -279,25 +277,6 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         gui_object.timer.timeout.connect(self.timer_actions)
         self.contacts.fetch_openalias(self.config)
 
-        # If the option hasn't been set yet
-        if not config.cv.AUTOMATIC_CENTRALIZED_UPDATE_CHECKS.is_set():
-            choice = self.question(title="Electrum - " + _("Enable update check"),
-                                   msg=_("For security reasons we advise that you always use the latest version of Electrum.") + " " +
-                                       _("Would you like to be notified when there is a newer version of Electrum available?"))
-            config.AUTOMATIC_CENTRALIZED_UPDATE_CHECKS = bool(choice)
-
-        self._update_check_thread = None
-        if config.AUTOMATIC_CENTRALIZED_UPDATE_CHECKS:
-            # The references to both the thread and the window need to be stored somewhere
-            # to prevent GC from getting in our way.
-            def on_version_received(v):
-                if UpdateCheck.is_newer(v):
-                    self.update_check_button.setText(_("Update to Electrum {} is available").format(v))
-                    self.update_check_button.clicked.connect(lambda: self.show_update_check(v))
-                    self.update_check_button.show()
-            self._update_check_thread = UpdateCheckThread()
-            self._update_check_thread.checked.connect(on_version_received)
-            self._update_check_thread.start()
 
     def run_coroutine_dialog(self, coro, text, on_result, on_cancelled):
         """ run coroutine in a waiting dialog, with a Cancel button that cancels the coroutine """
@@ -515,7 +494,6 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         self.update_console()
         self.receive_tab.do_clear()
         self.receive_tab.request_list.update()
-        self.channels_list.update()
         self.tabs.show()
         self.init_geometry()
         if self.config.GUI_QT_HIDE_ON_STARTUP and self.gui_object.tray.isVisible():
@@ -620,12 +598,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         backup_dir = self.config.WALLET_BACKUP_DIRECTORY
         backup_dir_label = HelpLabel(_('Backup directory') + ':', backup_help)
         msg = _('Please select a backup directory')
-        if self.wallet.has_lightning() and self.wallet.lnworker.channels:
-            msg += '\n\n' + ' '.join([
-                _("Note that lightning channels will be converted to channel backups."),
-                _("You cannot use channel backups to perform lightning payments."),
-                _("Channel backups can only be used to request your channels to be closed.")
-            ])
+ 
         self.backup_dir_e = QPushButton(backup_dir)
         self.backup_dir_e.clicked.connect(self.select_backup_dir)
         grid.addWidget(backup_dir_label, 1, 0)
@@ -727,7 +700,6 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         view_menu = menubar.addMenu(_("&View"))
         add_toggle_action(view_menu, self.addresses_tab)
         add_toggle_action(view_menu, self.utxo_tab)
-        add_toggle_action(view_menu, self.channels_tab)
         add_toggle_action(view_menu, self.contacts_tab)
         add_toggle_action(view_menu, self.console_tab)
 
@@ -983,8 +955,6 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
                     (_('Unmatured'), COLOR_UNMATURED, unmatured),
                     (_('Unconfirmed'), COLOR_UNCONFIRMED, unconfirmed),
                     (_('On-chain'), COLOR_CONFIRMED, confirmed),
-                    (_('Lightning'), COLOR_LIGHTNING, lightning),
-                    (_('Lightning frozen'), COLOR_FROZEN_LIGHTNING, f_lightning),
                 ])
                 balance = confirmed + unconfirmed + unmatured + frozen + lightning + f_lightning
                 balance_text =  _("Balance") + ": %s "%(self.format_amount_and_units(balance))
@@ -1629,9 +1599,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         sb.addPermanentWidget(StatusBarButton(read_QIcon("preferences.png"), _("Preferences"), self.settings_dialog, sb_height))
         self.seed_button = StatusBarButton(read_QIcon("seed.png"), _("Seed"), self.show_seed_dialog, sb_height)
         sb.addPermanentWidget(self.seed_button)
-        self.lightning_button = StatusBarButton(read_QIcon("lightning.png"), _("Lightning Network"), self.gui_object.show_lightning_dialog, sb_height)
-        sb.addPermanentWidget(self.lightning_button)
-        self.update_lightning_icon()
+       
+        
         self.status_button = None
         if self.network:
             self.status_button = StatusBarButton(read_QIcon("status_disconnected.png"), _("Network"), self.gui_object.show_network_dialog, sb_height)
@@ -1666,14 +1635,6 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         self.coincontrol_label.setText(msg)
         self.coincontrol_sb.setVisible(True)
 
-    def update_lightning_icon(self):
-        if not self.wallet.has_lightning():
-            self.lightning_button.setVisible(False)
-            return
-        if self.network is None or self.network.channel_db is None:
-            self.lightning_button.setVisible(False)
-            return
-        self.lightning_button.setVisible(True)
 
         cur, total, progress_percent = self.network.lngossip.get_sync_progress_estimate()
         # self.logger.debug(f"updating lngossip sync progress estimate: cur={cur}, total={total}")
