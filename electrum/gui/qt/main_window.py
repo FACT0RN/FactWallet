@@ -173,8 +173,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         self.gui_thread = gui_object.gui_thread
         assert wallet, "no wallet"
         self.wallet = wallet
-        if wallet.has_lightning() and not self.config.cv.GUI_QT_SHOW_TAB_CHANNELS.is_set():
-            self.config.GUI_QT_SHOW_TAB_CHANNELS = False  # override default, but still allow disabling tab manually
+        #if wallet.has_lightning() and not self.config.cv.GUI_QT_SHOW_TAB_CHANNELS.is_set():
+        #    self.config.GUI_QT_SHOW_TAB_CHANNELS = False  # override default, but still allow disabling tab manually
 
         Exception_Hook.maybe_setup(config=self.config, wallet=self.wallet)
 
@@ -461,9 +461,9 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
     def on_event_fee_histogram(self, *args):
         self.history_model.on_fee_histogram()
 
-    @qt_event_listener
-    def on_event_ln_gossip_sync_progress(self, *args):
-        self.update_lightning_icon()
+    #@qt_event_listener
+    #def on_event_ln_gossip_sync_progress(self, *args):
+    #    self.update_lightning_icon()
 
     @qt_event_listener
     def on_event_cert_mismatch(self, *args):
@@ -477,8 +477,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
     @profiler
     def load_wallet(self, wallet: Abstract_Wallet):
         self.update_recently_visited(wallet.storage.path)
-        if wallet.has_lightning():
-            util.trigger_callback('channels_updated', wallet)
+        #if wallet.has_lightning():
+        #    util.trigger_callback('channels_updated', wallet)
         self.need_update.set()
         # Once GUI has been initialized check if we want to announce something since the callback has been called before the GUI was initialized
         # update menus
@@ -1009,6 +1009,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         self.address_list.update()
         self.utxo_list.update()
         self.contact_list.update()
+        self.channels_list.update_rows.emit(wallet)
         self.update_completions()
 
     def refresh_tabs(self, wallet=None):
@@ -1057,10 +1058,10 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
     ):
         show_transaction(tx, parent=self, external_keypairs=external_keypairs, payment_identifier=payment_identifier)
 
-    def show_lightning_transaction(self, tx_item):
-        from .lightning_tx_dialog import LightningTxDialog
-        d = LightningTxDialog(self, tx_item)
-        d.show()
+    #def show_lightning_transaction(self, tx_item):
+    #    from .lightning_tx_dialog import LightningTxDialog
+    #    d = LightningTxDialog(self, tx_item)
+    #    d.show()
 
     def create_receive_tab(self):
         from .receive_tab import ReceiveTab
@@ -1740,19 +1741,19 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         if d.exec_():
             self.set_contact(line2.text(), line1.text())
 
-    def init_lightning_dialog(self, dialog):
-        assert not self.wallet.has_lightning()
-        if self.wallet.can_have_deterministic_lightning():
-            msg = _(
-                "Lightning is not enabled because this wallet was created with an old version of Electrum. "
-                "Create lightning keys?")
-        else:
-            msg = _(
-                "Warning: this wallet type does not support channel recovery from seed. "
-                "You will need to backup your wallet everytime you create a new channel. "
-                "Create lightning keys?")
-        if self.question(msg):
-            self._init_lightning_dialog(dialog=dialog)
+    #def init_lightning_dialog(self, dialog):
+    #    assert not self.wallet.has_lightning()
+    #    if self.wallet.can_have_deterministic_lightning():
+    #        msg = _(
+    #            "Lightning is not enabled because this wallet was created with an old version of Electrum. "
+    #            "Create lightning keys?")
+    #    else:
+    #        msg = _(
+    #            "Warning: this wallet type does not support channel recovery from seed. "
+    #            "You will need to backup your wallet everytime you create a new channel. "
+    #            "Create lightning keys?")
+    #    if self.question(msg):
+    #        self._init_lightning_dialog(dialog=dialog)
 
     @protected
     def _init_lightning_dialog(self, *, dialog, password):
@@ -2669,4 +2670,3 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         else:
             msg += _("Lightning funds were not received.")
             self.show_error_signal.emit(msg)
-
