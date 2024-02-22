@@ -304,7 +304,6 @@ class SettingsDialog(QDialog, QtEventListener):
         fiat_widgets.append((QLabel(_('Source')), ex_combo))
         fiat_widgets.append((self.history_rates_cb, None))
         misc_widgets = []
-        misc_widgets.append((updatecheck_cb, None))
         misc_widgets.append((filelogging_cb, None))
         misc_widgets.append((alias_label, self.alias_e))
         misc_widgets.append((qr_label, qr_combo))
