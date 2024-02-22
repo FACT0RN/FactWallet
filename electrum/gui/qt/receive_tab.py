@@ -283,13 +283,13 @@ class ReceiveTab(QWidget, MessageBoxMixin, Logger):
     def get_tab_data(self):
         i = self.config.GUI_QT_RECEIVE_TABS_INDEX
         if i == 0:
-            out = self.URI, self.URI, self.URI_help, _('FACT0RN URI')
+            out = self.addr, self.addr, self.address_help, _('Address')
         elif i == 1:
             out = self.addr, self.addr, self.address_help, _('Address')
         elif i == 2:
             # encode lightning invoices as uppercase so QR encoding can use
             # alphanumeric mode; resulting in smaller QR codes
-            out = self.lnaddr, self.lnaddr.upper(), self.ln_help, _('Lightning Request')
+            out = self.addr, self.addr, self.address_help, _('Address')
         return out
 
     def update_receive_qr_window(self):
