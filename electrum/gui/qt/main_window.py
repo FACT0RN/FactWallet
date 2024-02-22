@@ -1635,14 +1635,6 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         self.coincontrol_label.setText(msg)
         self.coincontrol_sb.setVisible(True)
 
-    def update_lightning_icon(self):
-        if not self.wallet.has_lightning():
-            self.lightning_button.setVisible(False)
-            return
-        if self.network is None or self.network.channel_db is None:
-            self.lightning_button.setVisible(False)
-            return
-        self.lightning_button.setVisible(True)
 
         cur, total, progress_percent = self.network.lngossip.get_sync_progress_estimate()
         # self.logger.debug(f"updating lngossip sync progress estimate: cur={cur}, total={total}")
