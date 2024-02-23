@@ -431,7 +431,12 @@ class Bitragem(ExchangeBase):
         json = await self.get_json('api.bitragem.com', '/v1/index?asset=BTC&market=BRL')
         return {'BRL': to_decimal(json['response']['index'])}
 
+class MEXC(ExchangeBase):
 
+    async def get_rates(self,ccy):
+        json = await self.get_json('api.mexc.com', '/api/v3/ticker/price?symbol=FACTUSDT')
+        return {'USD': to_decimal(json['response']['index'])}
+        
 class Biscoint(ExchangeBase):
 
     async def get_rates(self,ccy):
