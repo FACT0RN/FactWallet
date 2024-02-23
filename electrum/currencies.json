@@ -55,8 +55,7 @@
         "XRP",
         "ZAR"
     ],
-     "MEXC": [
-        "USDT",
+     "MEXC (must select USD)": [
         "USD"
      ]
 }
