@@ -338,6 +338,13 @@ class CoinDesk(ExchangeBase):
         json = await self.get_json('api.coindesk.com', query)
         return json['bpi']
 
+class MEXC(ExchangeBase):
+
+    async def get_rates(self, ccy):
+        json = await self.get_json('api.mexc.com', '/api/v3/ticker/price?symbol=FACTUSDT')
+        prices = json["price"]
+        return dict([(a[0].upper(),to_decimal(a[1])) for a in prices.items()])
+
 
 class CoinGecko(ExchangeBase):
 
