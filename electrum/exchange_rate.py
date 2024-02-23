@@ -456,7 +456,7 @@ class MEXC(ExchangeBase):
     async def get_rates(self, ccy):
         json = await self.get_json('api.mexc.com',
                              '/api/v3/ticker/price?symbol=FACTUSDT')
-        return {ccy: to_decimal(rate) for (ccy, rate) in json["data"]["rates"].items()}
+        return {ccy: to_decimal(rate) for (ccy, rate) in json["last"]["rates"].items()}
         
 
 def dictinvert(d):
