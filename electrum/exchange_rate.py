@@ -446,6 +446,13 @@ class Walltime(ExchangeBase):
                              '/data-production-walltime-info/production/dynamic/walltime-info.json')
         return {'BRL': to_decimal(json['BRL_XBT']['last_inexact'])}
 
+class MEXC(ExchangeBase):
+
+    async def get_rates(self, ccy):
+        json = await self.get_json('api.mexc.com',
+                             '/api/v3/ticker/price?symbol=FACTUSDT')
+        return {ccy: to_decimal(rate) for (ccy, rate) in json["data"]["rates"].items()}
+        
 
 def dictinvert(d):
     inv = {}
