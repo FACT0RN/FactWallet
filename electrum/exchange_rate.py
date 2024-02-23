@@ -277,11 +277,11 @@ class BlockchainInfo(ExchangeBase):
         return dict([(r, to_decimal(json[r]['15m'])) for r in json])
 
 
-class Bylls(ExchangeBase):
+class MEXC(ExchangeBase):
 
     async def get_rates(self, ccy):
-        json = await self.get_json('bylls.com', '/api/price?from_currency=BTC&to_currency=CAD')
-        return {'CAD': to_decimal(json['public_price']['to_price'])}
+        json = await self.get_json('api.mexc.com', 'https://api.mexc.com/api/v3/ticker/price?symbol=FACTUSDT')
+        return {'USDT': to_decimal(json['symbol']['price'])}
 
 
 class Coinbase(ExchangeBase):
@@ -399,6 +399,12 @@ class MercadoBitcoin(ExchangeBase):
         json = await self.get_json('api.bitvalor.com', '/v1/ticker.json')
         return {'BRL': to_decimal(json['ticker_1h']['exchanges']['MBT']['last'])}
 
+class MercadoBitcoin(ExchangeBase):
+
+    async def get_rates(self, ccy):
+        json = await self.get_json('api.bitvalor.com', '/v1/ticker.json')
+        return {'BRL': to_decimal(json['ticker_1h']['exchanges']['MBT']['last'])}
+        
 
 class TheRockTrading(ExchangeBase):
 
