@@ -339,30 +339,24 @@ class CoinDesk(ExchangeBase):
         return json['bpi']
 
 
-#class CoinGecko(ExchangeBase):
-#
-#   async def get_rates(self, ccy):
-#        json = await self.get_json('api.coingecko.com', '/api/v3/exchange_rates')
-#        return dict([(ccy.upper(), to_decimal(d['value']))
-#                     for ccy, d in json['rates'].items()])
-#
-#    def history_ccys(self):
-#        # CoinGecko seems to have historical data for all ccys it supports
-#        return CURRENCIES[self.name()]
-#
-#    async def request_history(self, ccy):
-#        history = await self.get_json('api.coingecko.com',
-#                                      '/api/v3/coins/bitcoin/market_chart?vs_currency=%s&days=max' % ccy)
-#
-#        return dict([(datetime.utcfromtimestamp(h[0]/1000).strftime('%Y-%m-%d'), str(h[1]))
-#                     for h in history['prices']])
-
 class CoinGecko(ExchangeBase):
 
-    def get_rates(self, ccy):
-        json = self.get_json('api.coingecko.com', '/api/v3/coins/bitcoin-cash?localization=False&sparkline=false')
-        prices = json["market_data"]["current_price"]
-        return dict([(a[0].upper(),to_decimal(a[1])) for a in prices.items()])
+   async def get_rates(self, ccy):
+        json = await self.get_json('api.coingecko.com', '/api/v3/exchange_rates')
+        return dict([(ccy.upper(), to_decimal(d['value']))
+                     for ccy, d in json['rates'].items()])
+
+    def history_ccys(self):
+        # CoinGecko seems to have historical data for all ccys it supports
+        return CURRENCIES[self.name()]
+
+    async def request_history(self, ccy):
+        history = await self.get_json('api.coingecko.com',
+                                      '/api/v3/coins/bitcoin/market_chart?vs_currency=%s&days=max' % ccy)
+
+        return dict([(datetime.utcfromtimestamp(h[0]/1000).strftime('%Y-%m-%d'), str(h[1]))
+                     for h in history['prices']])
+
 
     def history_ccys(self):
         return ['AED', 'ARS', 'AUD', 'BTD', 'BHD', 'BMD', 'BRL', 'BTC',
