@@ -281,7 +281,7 @@ class MEXC(ExchangeBase):
 
     async def get_rates(self, ccy):
         json = await self.get_json('api.mexc.com', 'https://api.mexc.com/api/v3/ticker/price?symbol=FACTUSDT')
-        return {'USD': to_decimal(json['symbol']['price'])}
+        return {'USDT': to_decimal(json['symbol']['price'])}
 
 
 class Coinbase(ExchangeBase):
