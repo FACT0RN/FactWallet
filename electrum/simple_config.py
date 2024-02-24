@@ -980,7 +980,7 @@ class SimpleConfig(Logger):
     )
 
     FX_USE_EXCHANGE_RATE = ConfigVar('use_exchange_rate', default=False, type_=bool)
-    FX_CURRENCY = ConfigVar('currency', default='EUR', type_=str)
+    FX_CURRENCY = ConfigVar('currency', default='USDT', type_=str)
     FX_EXCHANGE = ConfigVar('use_exchange', default='MEXC', type_=str)  # default exchange should ideally provide historical rates
     FX_HISTORY_RATES = ConfigVar(
         'history_rates', default=False, type_=bool,
