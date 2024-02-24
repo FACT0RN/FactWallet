@@ -105,7 +105,7 @@ Pane {
                         }
                         Label {
                             Layout.fillWidth: true
-                            text: qsTr('Fiat Currency')
+                            text: qsTr('Base Currency')
                             wrapMode: Text.Wrap
                         }
                     }
