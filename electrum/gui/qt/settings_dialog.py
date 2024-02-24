@@ -300,7 +300,7 @@ class SettingsDialog(QDialog, QtEventListener):
         units_widgets.append((msat_cb, None))
         units_widgets.append((thousandsep_cb, None))
         fiat_widgets = []
-        fiat_widgets.append((QLabel(_('Fiat currency')), ccy_combo))
+        fiat_widgets.append((QLabel(_('Base currency')), ccy_combo))
         fiat_widgets.append((QLabel(_('Source')), ex_combo))
         fiat_widgets.append((self.history_rates_cb, None))
         misc_widgets = []
