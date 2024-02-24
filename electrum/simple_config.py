@@ -981,10 +981,10 @@ class SimpleConfig(Logger):
 
     FX_USE_EXCHANGE_RATE = ConfigVar('use_exchange_rate', default=False, type_=bool)
     FX_CURRENCY = ConfigVar('currency', default='EUR', type_=str)
-    FX_EXCHANGE = ConfigVar('use_exchange', default='CoinGecko', type_=str)  # default exchange should ideally provide historical rates
+    FX_EXCHANGE = ConfigVar('use_exchange', default='MEXC', type_=str)  # default exchange should ideally provide historical rates
     FX_HISTORY_RATES = ConfigVar(
         'history_rates', default=False, type_=bool,
-        short_desc=lambda: _('Download historical rates'),
+        short_desc=lambda: _('Download historical rates (Coingecko Only)'),
     )
     FX_HISTORY_RATES_CAPITAL_GAINS = ConfigVar(
         'history_rates_capital_gains', default=False, type_=bool,
