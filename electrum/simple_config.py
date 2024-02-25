@@ -1108,7 +1108,7 @@ This will result in longer routes; it might increase your fees and decrease the 
     
     BTC_AMOUNTS_PREC_POST_SAT = ConfigVar(	
         'amt_precision_post_satoshi', default=0, type_=int,	
-        short_desc=lambda: _("Lightning precision (not supported)."),	
+        short_desc=lambda: _("Lightning precision (not supported, do not use)."),	
     )
     
     BTC_AMOUNTS_ADD_THOUSANDS_SEP = ConfigVar(
@@ -1117,7 +1117,7 @@ This will result in longer routes; it might increase your fees and decrease the 
     )
 
     BLOCK_EXPLORER = ConfigVar(
-        'block_explorer', default='Blockstream.info', type_=str,
+        'block_explorer', default='fact0rn.io', type_=str,
         short_desc=lambda: _('Online Block Explorer'),
         long_desc=lambda: _('Choose which online block explorer to use for functions that open a web browser'),
     )
@@ -1194,9 +1194,9 @@ This will result in longer routes; it might increase your fees and decrease the 
     WATCHTOWER_SERVER_USER = ConfigVar('watchtower_user', default=None, type_=str)
     WATCHTOWER_SERVER_PASSWORD = ConfigVar('watchtower_password', default=None, type_=str)
 
-    PAYSERVER_PORT = ConfigVar('payserver_port', default=8080, type_=int)
-    PAYSERVER_ROOT = ConfigVar('payserver_root', default='/r', type_=str)
-    PAYSERVER_ALLOW_CREATE_INVOICE = ConfigVar('payserver_allow_create_invoice', default=False, type_=bool)
+    #PAYSERVER_PORT = ConfigVar('payserver_port', default=8080, type_=int)
+    #PAYSERVER_ROOT = ConfigVar('payserver_root', default='/r', type_=str)
+    #PAYSERVER_ALLOW_CREATE_INVOICE = ConfigVar('payserver_allow_create_invoice', default=False, type_=bool)
 
     PLUGIN_TRUSTEDCOIN_NUM_PREPAY = ConfigVar('trustedcoin_prepay', default=20, type_=int)
 
