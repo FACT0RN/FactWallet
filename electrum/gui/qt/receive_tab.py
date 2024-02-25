@@ -207,11 +207,11 @@ class ReceiveTab(QWidget, MessageBoxMixin, Logger):
     def update_view_button(self):
         i = self.config.GUI_QT_RECEIVE_TABS_INDEX
         if i == 0:
-            icon, text = read_QIcon("bitcoin.png"), _('Address')
+            icon, text = read_QIcon("fact0rn.png"), _('Address')
         elif i == 1:
-            icon, text = read_QIcon("bitcoin.png"), _('Address')
+            icon, text = read_QIcon("fact0rn.png"), _('Address')
         elif i == 2:
-            icon, text = read_QIcon("bitcoin.png"), _('Address')
+            icon, text = read_QIcon("fact0rn.png"), _('Address')
         self.toggle_view_button.setText(text)
         self.toggle_view_button.setIcon(icon)
 
