@@ -1105,11 +1105,7 @@ This will result in longer routes; it might increase your fees and decrease the 
         short_desc=lambda: _('Zeros after decimal point'),
         long_desc=lambda: _('Number of zeros displayed after the decimal point. For example, if this is set to 2, "1." will be displayed as "1.00"'),
     )
-    
-    BTC_AMOUNTS_PREC_POST_SAT = ConfigVar(	
-        'amt_precision_post_satoshi', default=0, type_=int,	
-        short_desc=lambda: _("Lightning precision (not supported)."),	
-    )
+
     
     BTC_AMOUNTS_ADD_THOUSANDS_SEP = ConfigVar(
         'amt_add_thousands_sep', default=False, type_=bool,
@@ -1117,7 +1113,7 @@ This will result in longer routes; it might increase your fees and decrease the 
     )
 
     BLOCK_EXPLORER = ConfigVar(
-        'block_explorer', default='Blockstream.info', type_=str,
+        'block_explorer', default='fact0rn.io', type_=str,
         short_desc=lambda: _('Online Block Explorer'),
         long_desc=lambda: _('Choose which online block explorer to use for functions that open a web browser'),
     )
