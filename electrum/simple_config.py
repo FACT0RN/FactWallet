@@ -232,6 +232,7 @@ class SimpleConfig(Logger):
         except UnknownBaseUnit:
             self.decimal_point = DECIMAL_POINT_DEFAULT
         self.num_zeros = self.BTC_AMOUNTS_FORCE_NZEROS_AFTER_DECIMAL_POINT
+        self.amt_precision_post_satoshi = self.BTC_AMOUNTS_PREC_POST_SAT
         self.amt_add_thousands_sep = self.BTC_AMOUNTS_ADD_THOUSANDS_SEP
 
     def electrum_path(self):
@@ -850,8 +851,8 @@ class SimpleConfig(Logger):
         precision=None,
         add_thousands_sep: bool = None,
     ) -> str:
-      #  if precision is None:
-      #      precision = self.amt_precision_post_satoshi
+        if precision is None:
+            precision = self.amt_precision_post_satoshi
         if add_thousands_sep is None:
             add_thousands_sep = self.amt_add_thousands_sep
         return format_satoshis(
@@ -962,7 +963,7 @@ class SimpleConfig(Logger):
     WALLET_UNCONF_UTXO_FREEZE_THRESHOLD_SAT = ConfigVar('unconf_utxo_freeze_threshold', default=5_000, type_=int)
     WALLET_BIP21_LIGHTNING = ConfigVar(
         'bip21_lightning', default=False, type_=bool,
-        short_desc=lambda: _('Add lightning requests to bitcoin URIs'),
+        short_desc=lambda: _('Add lightning requests to Fact0rn URIs'),
         long_desc=lambda: _('This may result in large QR codes'),
     )
     WALLET_BOLT11_FALLBACK = ConfigVar(
@@ -1104,11 +1105,15 @@ This will result in longer routes; it might increase your fees and decrease the 
         short_desc=lambda: _('Zeros after decimal point'),
         long_desc=lambda: _('Number of zeros displayed after the decimal point. For example, if this is set to 2, "1." will be displayed as "1.00"'),
     )
-
+    
+    BTC_AMOUNTS_PREC_POST_SAT = ConfigVar(	
+        'amt_precision_post_satoshi', default=0, type_=int,	
+        short_desc=lambda: _("Lightning precision (not supported, do not use)."),	
+    )
     
     BTC_AMOUNTS_ADD_THOUSANDS_SEP = ConfigVar(
         'amt_add_thousands_sep', default=False, type_=bool,
-        short_desc=lambda: _("Add thousand separators to bitcoin amounts"),
+        short_desc=lambda: _("Add thousand separators to Fact0rn amounts"),
     )
 
     BLOCK_EXPLORER = ConfigVar(
