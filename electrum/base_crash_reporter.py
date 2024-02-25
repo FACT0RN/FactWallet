@@ -112,33 +112,49 @@ class BaseCrashReporter(Logger):
 #            async with session.post(url, data=data, raise_for_status=True) as resp:
 #                return await resp.text()
 
+class BaseCrashReporter:
+    @staticmethod
+    def get_traceback_info():
+        # Dummy method to simulate getting traceback info
+        return {"traceback": "Dummy traceback info"}
+
+    @staticmethod
+    def get_additional_info():
+        # Dummy method to simulate getting additional info
+        return {"additional_info": "Dummy additional info"}
+
+class CrashReportResponse:
+    def __init__(self, status, url, text):
+        self.status = status
+        self.url = url
+        self.text = text
+
 class ExampleClass:
-    def send_report(self, report_info):
-        # Create a MIME multipart message
-        msg = MIMEMultipart()
-        msg['From'] = 'sender@example.com'
-        msg['To'] = 'recipient@example.com'
-        msg['Subject'] = 'Crash Report'
+    @staticmethod
+    def send_report(report_info):
+        # Constructing the report
+        report = BaseCrashReporter.get_traceback_info()
+        report.update(BaseCrashReporter.get_additional_info())
+        report = json.dumps(report)
 
-        # Add the report information as text in the email body
-        body = json.dumps(report_info)
-        msg.attach(MIMEText(body, 'plain'))
+        # Open default email client with report information
+        webbrowser.open("mailto:recipient@example.com?subject=Crash Report&body=" + report)
 
-        # Open the default email client
-        webbrowser.open('mailto:recipient@example.com?subject=Crash Report&body=' + body)
+        # Creating a response (for demonstration purposes)
+        ret = CrashReportResponse(
+            status="Success",
+            url=None,
+            text="Thanks for reporting this issue!"
+        )
 
-        # Uncomment the following lines if you want to send the email using SMTP
-        # with smtplib.SMTP('smtp.example.com', 587) as smtp:
-        #     smtp.starttls()
-        #     smtp.login('your_email@example.com', 'your_password')
-        #     smtp.send_message(msg)
+        return ret
 
-    example_instance = ExampleClass()
-    report_info = {
-    "traceback": "Traceback information here...",
-    "additional_info": "Additional information here..."
-    }
-    example_instance.send_report(report_info)
+# Usage:
+example_instance = ExampleClass()
+report_info = {"dummy_key": "dummy_value"}
+response = example_instance.send_report(report_info)
+print(response.text)  # Output: Thanks for reporting this issue!
+
 
 
     def get_traceback_info(self):
