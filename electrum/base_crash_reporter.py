@@ -78,76 +78,39 @@ class BaseCrashReporter(Logger):
         Logger.__init__(self)
         self.exc_args = (exctype, value, tb)
 
-#    def send_report(self, asyncio_loop, proxy, *, timeout=None) -> CrashReportResponse:
-#        # FIXME the caller needs to catch generic "Exception", as this method does not have a well-defined API...
-#        if constants.net.GENESIS[-4:] not in ["4943", "e26f"] and ".electrum.org" in BaseCrashReporter.report_server:
-#            # Gah! Some kind of altcoin wants to send us crash reports.
-#            raise Exception(_("Missing report URL."))
-#        report = self.get_traceback_info()
-#        report.update(self.get_additional_info())
-#        report = json.dumps(report)
-#        coro = self.do_post(proxy, BaseCrashReporter.report_server + "/crash.json", data=report)
-#        response = asyncio.run_coroutine_threadsafe(coro, asyncio_loop).result(timeout)
-#        self.logger.info(
-#            f"Crash report sent. Got response [DO NOT TRUST THIS MESSAGE]: {error_text_str_to_safe_str(response)}")
-#        response = json.loads(response)
-#        assert isinstance(response, dict), type(response)
-#        # sanitize URL
-#        if location := response.get("location"):
-#            assert isinstance(location, str)
-#            base_issues_url = constants.GIT_REPO_ISSUES_URL
-#            if not base_issues_url.endswith("/"):
-#                base_issues_url = base_issues_url + "/"
-#            if not location.startswith(base_issues_url):
-#                location = None
-#        ret = CrashReportResponse(
-#            status=response.get("status"),
-#            url=location,
-#            text=_("Thanks for reporting this issue!"),
-#        )
-#        return ret
-#
-#    async def do_post(self, proxy, url, data) -> str:
-#        async with make_aiohttp_session(proxy) as session:
-#            async with session.post(url, data=data, raise_for_status=True) as resp:
-#                return await resp.text()
-
-class BaseCrashReporter:
-    @staticmethod
-    def get_traceback_info():
-        # Dummy method to simulate getting traceback info
-        return {"traceback": "Dummy traceback info"}
-
-    @staticmethod
-    def get_additional_info():
-        # Dummy method to simulate getting additional info
-        return {"additional_info": "Dummy additional info"}
-
-class CrashReportResponse:
-    def __init__(self, status, url, text):
-        self.status = status
-        self.url = url
-        self.text = text
-
-class ExampleClass:
-    @staticmethod
-    def send_report(report_info):
-        # Constructing the report
-        report = BaseCrashReporter.get_traceback_info()
-        report.update(BaseCrashReporter.get_additional_info())
+    def send_report(self, asyncio_loop, proxy, *, timeout=None) -> CrashReportResponse:
+        # FIXME the caller needs to catch generic "Exception", as this method does not have a well-defined API...
+        if constants.net.GENESIS[-4:] not in ["4943", "e26f"] and ".electrum.org" in BaseCrashReporter.report_server:
+            # Gah! Some kind of altcoin wants to send us crash reports.
+            raise Exception(_("Missing report URL."))
+        report = self.get_traceback_info()
+        report.update(self.get_additional_info())
         report = json.dumps(report)
-
-        # Open default email client with report information
-        webbrowser.open("mailto:recipient@example.com?subject=Crash Report&body=" + report)
-        webbrowser.open("mailto:recipient@example.com?subject=Crash Report&body=" + report, method='open_new')
-        # Creating a response (for demonstration purposes)
+        coro = self.do_post(proxy, BaseCrashReporter.report_server + "/crash.json", data=report)
+        response = asyncio.run_coroutine_threadsafe(coro, asyncio_loop).result(timeout)
+        self.logger.info(
+            f"Crash report sent. Got response [DO NOT TRUST THIS MESSAGE]: {error_text_str_to_safe_str(response)}")
+        response = json.loads(response)
+        assert isinstance(response, dict), type(response)
+        # sanitize URL
+        if location := response.get("location"):
+            assert isinstance(location, str)
+            base_issues_url = constants.GIT_REPO_ISSUES_URL
+            if not base_issues_url.endswith("/"):
+                base_issues_url = base_issues_url + "/"
+            if not location.startswith(base_issues_url):
+                location = None
         ret = CrashReportResponse(
-            status="Success",
-            url=None,
-            text="Thanks for reporting this issue!"
+            status=response.get("status"),
+            url=location,
+            text=_("Thanks for reporting this issue!"),
         )
-
         return ret
+
+    async def do_post(self, proxy, url, data) -> str:
+        async with make_aiohttp_session(proxy) as session:
+            async with session.post(url, data=data, raise_for_status=True) as resp:
+               return await resp.text()
 
 
 
