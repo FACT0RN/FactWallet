@@ -963,7 +963,7 @@ class SimpleConfig(Logger):
     WALLET_UNCONF_UTXO_FREEZE_THRESHOLD_SAT = ConfigVar('unconf_utxo_freeze_threshold', default=5_000, type_=int)
     WALLET_BIP21_LIGHTNING = ConfigVar(
         'bip21_lightning', default=False, type_=bool,
-        short_desc=lambda: _('Add lightning requests to bitcoin URIs'),
+        short_desc=lambda: _('Add lightning requests to Fact0rn URIs'),
         long_desc=lambda: _('This may result in large QR codes'),
     )
     WALLET_BOLT11_FALLBACK = ConfigVar(
@@ -1113,7 +1113,7 @@ This will result in longer routes; it might increase your fees and decrease the 
     
     BTC_AMOUNTS_ADD_THOUSANDS_SEP = ConfigVar(
         'amt_add_thousands_sep', default=False, type_=bool,
-        short_desc=lambda: _("Add thousand separators to bitcoin amounts"),
+        short_desc=lambda: _("Add thousand separators to Fact0rn amounts"),
     )
 
     BLOCK_EXPLORER = ConfigVar(
