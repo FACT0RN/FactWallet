@@ -140,7 +140,7 @@ class BaseCrashReporter(Logger):
     }
     example_instance.send_report(report_info)
 
-
+class ExampleClass:
     def get_traceback_info(self):
         exc_string = str(self.exc_args[1])
         stack = traceback.extract_tb(self.exc_args[2])
