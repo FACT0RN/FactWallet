@@ -232,7 +232,6 @@ class SimpleConfig(Logger):
         except UnknownBaseUnit:
             self.decimal_point = DECIMAL_POINT_DEFAULT
         self.num_zeros = self.BTC_AMOUNTS_FORCE_NZEROS_AFTER_DECIMAL_POINT
-        self.amt_precision_post_satoshi = self.BTC_AMOUNTS_PREC_POST_SAT
         self.amt_add_thousands_sep = self.BTC_AMOUNTS_ADD_THOUSANDS_SEP
 
     def electrum_path(self):
