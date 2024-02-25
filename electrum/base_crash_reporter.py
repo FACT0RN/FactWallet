@@ -25,6 +25,15 @@ import locale
 import traceback
 import sys
 import queue
+
+import smtplib
+import webbrowser
+import json
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+
 from typing import NamedTuple, Optional
 
 from .version import ELECTRUM_VERSION
@@ -69,39 +78,68 @@ class BaseCrashReporter(Logger):
         Logger.__init__(self)
         self.exc_args = (exctype, value, tb)
 
-    def send_report(self, asyncio_loop, proxy, *, timeout=None) -> CrashReportResponse:
-        # FIXME the caller needs to catch generic "Exception", as this method does not have a well-defined API...
-        if constants.net.GENESIS[-4:] not in ["4943", "e26f"] and ".electrum.org" in BaseCrashReporter.report_server:
-            # Gah! Some kind of altcoin wants to send us crash reports.
-            raise Exception(_("Missing report URL."))
-        report = self.get_traceback_info()
-        report.update(self.get_additional_info())
-        report = json.dumps(report)
-        coro = self.do_post(proxy, BaseCrashReporter.report_server + "/crash.json", data=report)
-        response = asyncio.run_coroutine_threadsafe(coro, asyncio_loop).result(timeout)
-        self.logger.info(
-            f"Crash report sent. Got response [DO NOT TRUST THIS MESSAGE]: {error_text_str_to_safe_str(response)}")
-        response = json.loads(response)
-        assert isinstance(response, dict), type(response)
-        # sanitize URL
-        if location := response.get("location"):
-            assert isinstance(location, str)
-            base_issues_url = constants.GIT_REPO_ISSUES_URL
-            if not base_issues_url.endswith("/"):
-                base_issues_url = base_issues_url + "/"
-            if not location.startswith(base_issues_url):
-                location = None
-        ret = CrashReportResponse(
-            status=response.get("status"),
-            url=location,
-            text=_("Thanks for reporting this issue!"),
-        )
-        return ret
+#    def send_report(self, asyncio_loop, proxy, *, timeout=None) -> CrashReportResponse:
+#        # FIXME the caller needs to catch generic "Exception", as this method does not have a well-defined API...
+#        if constants.net.GENESIS[-4:] not in ["4943", "e26f"] and ".electrum.org" in BaseCrashReporter.report_server:
+#            # Gah! Some kind of altcoin wants to send us crash reports.
+#            raise Exception(_("Missing report URL."))
+#        report = self.get_traceback_info()
+#        report.update(self.get_additional_info())
+#        report = json.dumps(report)
+#        coro = self.do_post(proxy, BaseCrashReporter.report_server + "/crash.json", data=report)
+#        response = asyncio.run_coroutine_threadsafe(coro, asyncio_loop).result(timeout)
+#        self.logger.info(
+#            f"Crash report sent. Got response [DO NOT TRUST THIS MESSAGE]: {error_text_str_to_safe_str(response)}")
+#        response = json.loads(response)
+#        assert isinstance(response, dict), type(response)
+#        # sanitize URL
+#        if location := response.get("location"):
+#            assert isinstance(location, str)
+#            base_issues_url = constants.GIT_REPO_ISSUES_URL
+#            if not base_issues_url.endswith("/"):
+#                base_issues_url = base_issues_url + "/"
+#            if not location.startswith(base_issues_url):
+#                location = None
+#        ret = CrashReportResponse(
+#            status=response.get("status"),
+#            url=location,
+#            text=_("Thanks for reporting this issue!"),
+#        )
+#        return ret
+#
+#    async def do_post(self, proxy, url, data) -> str:
+#        async with make_aiohttp_session(proxy) as session:
+#            async with session.post(url, data=data, raise_for_status=True) as resp:
+#                return await resp.text()
 
-    async def do_post(self, proxy, url, data) -> str:
-        async with make_aiohttp_session(proxy) as session:
-            async with session.post(url, data=data, raise_for_status=True) as resp:
-                return await resp.text()
+
+    def send_report(self, report_info):
+        # Create a MIME multipart message
+        msg = MIMEMultipart()
+        msg['From'] = 'sender@example.com'
+        msg['To'] = 'recipient@example.com'
+        msg['Subject'] = 'Crash Report'
+
+        # Add the report information as text in the email body
+        body = json.dumps(report_info)
+        msg.attach(MIMEText(body, 'plain'))
+
+        # Open the default email client
+        webbrowser.open('mailto:recipient@example.com?subject=Crash Report&body=' + body)
+
+        # Uncomment the following lines if you want to send the email using SMTP
+        # with smtplib.SMTP('smtp.example.com', 587) as smtp:
+        #     smtp.starttls()
+        #     smtp.login('your_email@example.com', 'your_password')
+        #     smtp.send_message(msg)
+
+    example_instance = ExampleClass()
+    report_info = {
+    "traceback": "Traceback information here...",
+    "additional_info": "Additional information here..."
+    }
+    example_instance.send_report(report_info)
+
 
     def get_traceback_info(self):
         exc_string = str(self.exc_args[1])
