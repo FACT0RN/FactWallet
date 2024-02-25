@@ -1194,9 +1194,9 @@ This will result in longer routes; it might increase your fees and decrease the 
     WATCHTOWER_SERVER_USER = ConfigVar('watchtower_user', default=None, type_=str)
     WATCHTOWER_SERVER_PASSWORD = ConfigVar('watchtower_password', default=None, type_=str)
 
-    PAYSERVER_PORT = ConfigVar('payserver_port', default=8080, type_=int)
-    PAYSERVER_ROOT = ConfigVar('payserver_root', default='/r', type_=str)
-    PAYSERVER_ALLOW_CREATE_INVOICE = ConfigVar('payserver_allow_create_invoice', default=False, type_=bool)
+    #PAYSERVER_PORT = ConfigVar('payserver_port', default=8080, type_=int)
+    #PAYSERVER_ROOT = ConfigVar('payserver_root', default='/r', type_=str)
+    #PAYSERVER_ALLOW_CREATE_INVOICE = ConfigVar('payserver_allow_create_invoice', default=False, type_=bool)
 
     PLUGIN_TRUSTEDCOIN_NUM_PREPAY = ConfigVar('trustedcoin_prepay', default=20, type_=int)
 
