@@ -173,7 +173,7 @@ class SettingsDialog(QDialog, QtEventListener):
 
         colortheme_combo = QComboBox()
         colortheme_combo.addItem(_('Light'), 'default')
-        colortheme_combo.addItem(_('Dark'), 'dark3')
+        colortheme_combo.addItem(_('Dark'), 'dark')
         index = colortheme_combo.findData(self.config.GUI_QT_COLOR_THEME)
         colortheme_combo.setCurrentIndex(index)
         colortheme_label = QLabel(self.config.cv.GUI_QT_COLOR_THEME.get_short_desc() + ':')
