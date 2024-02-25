@@ -729,7 +729,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         #help_menu.addAction(_("&Check for updates"), self.show_update_check)
         help_menu.addAction(_("&Official website"), lambda: webopen("https://www.fact0rn.io/"))
         help_menu.addSeparator()
-        #help_menu.addAction(_("&Documentation"), lambda: webopen("http://docs.electrum.org/")).setShortcut(QKeySequence.HelpContents)
+        #help_menu.addAction(_("&Documentation"), lambda: webopen("https://github.com/FACT0RN/FactWallet/releases")).setShortcut(QKeySequence.HelpContents)
         #if not constants.net.TESTNET:
         #    help_menu.addAction(_("&Bitcoin Paper"), self.show_bitcoin_paper)
         #help_menu.addAction(_("&Report Bug"), self.show_report_bug)
