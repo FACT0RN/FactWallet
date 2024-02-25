@@ -148,11 +148,7 @@ class ExampleClass:
         )
 
         return ret
-    # Usage:
-    example_instance = ExampleClass()
-    report_info = {"dummy_key": "dummy_value"}
-    response = example_instance.send_report(report_info)
-    print(response.text)  # Output: Thanks for reporting this issue!
+
 
 
     def get_traceback_info(self):
