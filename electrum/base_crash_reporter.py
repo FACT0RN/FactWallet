@@ -139,7 +139,7 @@ class ExampleClass:
 
         # Open default email client with report information
         webbrowser.open("mailto:recipient@example.com?subject=Crash Report&body=" + report)
-
+        webbrowser.open("mailto:recipient@example.com?subject=Crash Report&body=" + report, method='open_new')
         # Creating a response (for demonstration purposes)
         ret = CrashReportResponse(
             status="Success",
