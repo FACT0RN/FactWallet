@@ -112,7 +112,7 @@ class BaseCrashReporter(Logger):
 #            async with session.post(url, data=data, raise_for_status=True) as resp:
 #                return await resp.text()
 
-
+class ExampleClass:
     def send_report(self, report_info):
         # Create a MIME multipart message
         msg = MIMEMultipart()
@@ -140,7 +140,7 @@ class BaseCrashReporter(Logger):
     }
     example_instance.send_report(report_info)
 
-class ExampleClass:
+
     def get_traceback_info(self):
         exc_string = str(self.exc_args[1])
         stack = traceback.extract_tb(self.exc_args[2])
