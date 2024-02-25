@@ -25,8 +25,6 @@ import locale
 import traceback
 import sys
 import queue
-
-
 from typing import NamedTuple, Optional
 
 from .version import ELECTRUM_VERSION
@@ -103,9 +101,7 @@ class BaseCrashReporter(Logger):
     async def do_post(self, proxy, url, data) -> str:
         async with make_aiohttp_session(proxy) as session:
             async with session.post(url, data=data, raise_for_status=True) as resp:
-               return await resp.text()
-
-
+                return await resp.text()
 
     def get_traceback_info(self):
         exc_string = str(self.exc_args[1])
