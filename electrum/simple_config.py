@@ -850,8 +850,8 @@ class SimpleConfig(Logger):
         precision=None,
         add_thousands_sep: bool = None,
     ) -> str:
-        if precision is None:
-            precision = self.amt_precision_post_satoshi
+      #  if precision is None:
+      #      precision = self.amt_precision_post_satoshi
         if add_thousands_sep is None:
             add_thousands_sep = self.amt_add_thousands_sep
         return format_satoshis(
