@@ -148,7 +148,6 @@ class ExampleClass:
         )
 
         return ret
-
     # Usage:
     example_instance = ExampleClass()
     report_info = {"dummy_key": "dummy_value"}
