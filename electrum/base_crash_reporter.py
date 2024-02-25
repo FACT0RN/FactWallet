@@ -133,12 +133,12 @@ class ExampleClass:
         #     smtp.login('your_email@example.com', 'your_password')
         #     smtp.send_message(msg)
 
-    example_instance = ExampleClass()
-    report_info = {
-    "traceback": "Traceback information here...",
-    "additional_info": "Additional information here..."
-    }
-    example_instance.send_report(report_info)
+    #example_instance = ExampleClass()
+    #report_info = {
+    #"traceback": "Traceback information here...",
+    #"additional_info": "Additional information here..."
+    #}
+    #example_instance.send_report(report_info)
 
 
     def get_traceback_info(self):
