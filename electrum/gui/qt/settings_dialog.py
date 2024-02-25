@@ -303,16 +303,13 @@ class SettingsDialog(QDialog, QtEventListener):
         fiat_widgets.append((QLabel(_('Base currency')), ccy_combo))
         fiat_widgets.append((QLabel(_('Source')), ex_combo))
         fiat_widgets.append((self.history_rates_cb, None))
-        misc_widgets = []
-        misc_widgets.append((filelogging_cb, None))
-        misc_widgets.append((alias_label, self.alias_e))
-        misc_widgets.append((qr_label, qr_combo))
+    
 
         tabs_info = [
             (gui_widgets, _('Appearance')),
             (units_widgets, _('Units')),
             (fiat_widgets, _('Fiat')),
-            (misc_widgets, _('Misc')),
+            
         ]
         for widgets, name in tabs_info:
             tab = QWidget()
