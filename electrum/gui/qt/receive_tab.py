@@ -182,12 +182,8 @@ class ReceiveTab(QWidget, MessageBoxMixin, Logger):
 
     def expiry_dialog(self):
         msg = ''.join([
-            _('Expiration period of your request.'), ' ',
-            _('This information is seen by the recipient if you send them a signed payment request.'),
-            '\n\n',
-            _('For on-chain requests, the address gets reserved until expiration. After that, it might get reused.'), ' ',
-            _('The bitcoin address never expires and will always be part of this electrum wallet.'), ' ',
-            _('You can reuse a bitcoin address any number of times but it is not good for your privacy.'),
+            _('The fact0rn address never expires and will always be part of this electrum wallet.'), ' ',
+            _('You can reuse a Fact0rn address any number of times but it is not good for your privacy.'),
             '\n\n',
             _('Lightning not supported.'),
         ])
