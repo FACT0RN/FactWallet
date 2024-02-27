@@ -2471,18 +2471,18 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
 
         settings_widgets = {}
 
-        def enable_settings_widget(p: Optional['BasePlugin'], name: str, i: int):
-            widget = settings_widgets.get(name)  # type: Optional[QWidget]
-            if widget and not p:
-                # plugin got disabled, rm widget
-                grid.removeWidget(widget)
-                widget.setParent(None)
-                settings_widgets.pop(name)
-            elif widget is None and p and p.requires_settings() and p.is_enabled():
-                # plugin got enabled, add widget
-                widget = settings_widgets[name] = p.settings_widget(d)
-                grid.addWidget(widget, i, 1)
-
+ #       def enable_settings_widget(p: Optional['BasePlugin'], name: str, i: int):
+ #           widget = settings_widgets.get(name)  # type: Optional[QWidget]
+ #           if widget and not p:
+ #               # plugin got disabled, rm widget
+ #               grid.removeWidget(widget)
+ #               widget.setParent(None)
+ #               settings_widgets.pop(name)
+ #           elif widget is None and p and p.requires_settings() and p.is_enabled():
+ #               # plugin got enabled, add widget
+ #               widget = settings_widgets[name] = p.settings_widget(d)
+ #               grid.addWidget(widget, i, 1)
+ #
  #       def do_toggle(cb, name, i):
  #           p = plugins.toggle(name)
  #           cb.setChecked(bool(p))
