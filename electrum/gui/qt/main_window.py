@@ -1577,12 +1577,12 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         self.search_box.hide()
         sb.addPermanentWidget(self.search_box)
 
-        self.update_check_button = QPushButton("")
-        self.update_check_button.setFlat(True)
-        self.update_check_button.setCursor(QCursor(Qt.PointingHandCursor))
-        self.update_check_button.setIcon(read_QIcon("update.png"))
-        self.update_check_button.hide()
-        sb.addPermanentWidget(self.update_check_button)
+        #self.update_check_button = QPushButton("")
+        #self.update_check_button.setFlat(True)
+        #self.update_check_button.setCursor(QCursor(Qt.PointingHandCursor))
+        #self.update_check_button.setIcon(read_QIcon("update.png"))
+        #self.update_check_button.hide()
+        #sb.addPermanentWidget(self.update_check_button)
 
         self.tasks_label = QLabel('')
         sb.addPermanentWidget(self.tasks_label)
@@ -2483,38 +2483,38 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
                 widget = settings_widgets[name] = p.settings_widget(d)
                 grid.addWidget(widget, i, 1)
 
-        def do_toggle(cb, name, i):
-            p = plugins.toggle(name)
-            cb.setChecked(bool(p))
-            enable_settings_widget(p, name, i)
-            # note: all enabled plugins will receive this hook:
-            run_hook('init_qt', self.gui_object)
-
-        for i, descr in enumerate(plugins.descriptions.values()):
-            full_name = descr['__name__']
-            prefix, _separator, name = full_name.rpartition('.')
-            p = plugins.get(name)
-            if descr.get('registers_keystore'):
-                continue
-            try:
-                cb = QCheckBox(descr['fullname'])
-                plugin_is_loaded = p is not None
-                cb_enabled = (not plugin_is_loaded and plugins.is_available(name, self.wallet)
-                              or plugin_is_loaded and p.can_user_disable())
-                cb.setEnabled(cb_enabled)
-                cb.setChecked(plugin_is_loaded and p.is_enabled())
-                grid.addWidget(cb, i, 0)
-                enable_settings_widget(p, name, i)
-                cb.clicked.connect(partial(do_toggle, cb, name, i))
-                msg = descr['description']
-                if descr.get('requires'):
-                    msg += '\n\n' + _('Requires') + ':\n' + '\n'.join(map(lambda x: x[1], descr.get('requires')))
-                grid.addWidget(HelpButton(msg), i, 2)
-            except Exception:
-                self.logger.exception(f"cannot display plugin {name}")
-        grid.setRowStretch(len(plugins.descriptions.values()), 1)
-        vbox.addLayout(Buttons(CloseButton(d)))
-        d.exec_()
+ #       def do_toggle(cb, name, i):
+ #           p = plugins.toggle(name)
+ #           cb.setChecked(bool(p))
+ #           enable_settings_widget(p, name, i)
+ #           # note: all enabled plugins will receive this hook:
+ #           run_hook('init_qt', self.gui_object)
+ #   
+ #       for i, descr in enumerate(plugins.descriptions.values()):
+ #           full_name = descr['__name__']
+ #           prefix, _separator, name = full_name.rpartition('.')
+ #           p = plugins.get(name)
+ #           if descr.get('registers_keystore'):
+ #               continue
+ #           try:
+ #               cb = QCheckBox(descr['fullname'])
+ #               plugin_is_loaded = p is not None
+ #               cb_enabled = (not plugin_is_loaded and plugins.is_available(name, self.wallet)
+ #                             or plugin_is_loaded and p.can_user_disable())
+ #               cb.setEnabled(cb_enabled)
+ #               cb.setChecked(plugin_is_loaded and p.is_enabled())
+ #               grid.addWidget(cb, i, 0)
+ #               enable_settings_widget(p, name, i)
+ #               cb.clicked.connect(partial(do_toggle, cb, name, i))
+ #               msg = descr['description']
+ #               if descr.get('requires'):
+ #                   msg += '\n\n' + _('Requires') + ':\n' + '\n'.join(map(lambda x: x[1], descr.get('requires')))
+ #               grid.addWidget(HelpButton(msg), i, 2)
+ #           except Exception:
+ #               self.logger.exception(f"cannot display plugin {name}")
+ #       grid.setRowStretch(len(plugins.descriptions.values()), 1)
+ #       vbox.addLayout(Buttons(CloseButton(d)))
+ #       d.exec_()
 
     def cpfp_dialog(self, parent_tx: Transaction) -> None:
         new_tx = self.wallet.cpfp(parent_tx, 0)
