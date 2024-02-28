@@ -1521,7 +1521,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         console.updateNamespace({
             'wallet': self.wallet,
             'network': self.network,
-            'plugins': self.gui_object.plugins,
+           # 'plugins': self.gui_object.plugins,
             'window': self,
             'config': self.config,
             'electrum': electrum,
@@ -1529,7 +1529,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
             'util': util,
             'bitcoin': bitcoin,
             'lnutil': lnutil,
-            'channels': list(self.wallet.lnworker.channels.values()) if self.wallet.lnworker else []
+           # 'channels': list(self.wallet.lnworker.channels.values()) if self.wallet.lnworker else []
         })
 
         c = commands.Commands(
@@ -2447,29 +2447,29 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
         self.gui_object.timer.timeout.disconnect(self.timer_actions)
         self.gui_object.close_window(self)
 
-    def plugins_dialog(self):
-        self.pluginsdialog = d = WindowModalDialog(self, _('Electrum Plugins'))
+    #def plugins_dialog(self):
+    #    self.pluginsdialog = d = WindowModalDialog(self, _('Electrum Plugins'))
+    #    
+    #    plugins = self.gui_object.plugins    
+    #
+    #    vbox = QVBoxLayout(d)
+    #
+    #    # plugins
+    #    scroll = QScrollArea()
+    #    scroll.setEnabled(True)
+    #    scroll.setWidgetResizable(True)
+    #    scroll.setMinimumSize(400,250)
+    #    vbox.addWidget(scroll)
+    #
+    #    w = QWidget()
+    #    scroll.setWidget(w)
+    #    w.setMinimumHeight(plugins.count() * 35)
+    #
+    #    grid = QGridLayout()
+    #    grid.setColumnStretch(0,1)
+    #    w.setLayout(grid)
 
-        plugins = self.gui_object.plugins
-
-        vbox = QVBoxLayout(d)
-
-        # plugins
-        scroll = QScrollArea()
-        scroll.setEnabled(True)
-        scroll.setWidgetResizable(True)
-        scroll.setMinimumSize(400,250)
-        vbox.addWidget(scroll)
-
-        w = QWidget()
-        scroll.setWidget(w)
-        w.setMinimumHeight(plugins.count() * 35)
-
-        grid = QGridLayout()
-        grid.setColumnStretch(0,1)
-        w.setLayout(grid)
-
-        settings_widgets = {}
+       settings_widgets = {}
 
  #       def enable_settings_widget(p: Optional['BasePlugin'], name: str, i: int):
  #           widget = settings_widgets.get(name)  # type: Optional[QWidget]
