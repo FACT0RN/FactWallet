@@ -2469,7 +2469,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger, QtEventListener):
     #    grid.setColumnStretch(0,1)
     #    w.setLayout(grid)
 
-       settings_widgets = {}
+    #   settings_widgets = {}
 
  #       def enable_settings_widget(p: Optional['BasePlugin'], name: str, i: int):
  #           widget = settings_widgets.get(name)  # type: Optional[QWidget]
