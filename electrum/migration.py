@@ -142,7 +142,7 @@ class MigrationDialog(QDialog):
             f"Would you like to migrate it to:<br>"
             f"<code>{factwallet_dir}</code><br><br>"
             f"A backup will be created before migration<br><br>"
-            f"If you choose to skip, a new wallet will be created."
+            f"If you choose No, a new, empty wallet will be created, and your old wallet will be left unchanged."
         )
         message.setWordWrap(True)
         message.setTextFormat(Qt.RichText)
@@ -179,15 +179,15 @@ class MigrationDialog(QDialog):
             # This will only be called after the user acknowledges the info dialog
             self.accept()
         else:
+            self.error = True
             QMessageBox.critical(
                 self,
                 "Migration Failed",
                 f"Failed to migrate wallet from {self.electrum_dir} to {self.factwallet_dir}.\n\n"
                 f"A backup containing your original wallet is available at:\n"
                 f"{self.backup_dir}\n\n"
-                f"Please try manually copying your wallet or create a new wallet."
+                f"Please try manually copying your wallet or create a new, empty wallet."
             )
-            self.error = True
             # This will only be called after the user acknowledges the critical dialog
             self.reject()
 
