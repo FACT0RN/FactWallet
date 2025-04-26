@@ -624,7 +624,8 @@ def xor_bytes(a: bytes, b: bytes) -> bytes:
             .to_bytes(size, "big"))
 
 
-def user_dir():
+# Returns the old user directory (for migration purposes)
+def old_user_dir():
     if "ELECTRUMDIR" in os.environ:
         return os.environ["ELECTRUMDIR"]
     elif 'ANDROID_DATA' in os.environ:
@@ -635,6 +636,22 @@ def user_dir():
         return os.path.join(os.environ["APPDATA"], "Electrum")
     elif "LOCALAPPDATA" in os.environ:
         return os.path.join(os.environ["LOCALAPPDATA"], "Electrum")
+    else:
+        #raise Exception("No home directory found in environment variables.")
+        return
+
+
+def user_dir():
+    if "FACTWALLETDIR" in os.environ:
+        return os.environ["FACTWALLETDIR"]
+    elif 'ANDROID_DATA' in os.environ:
+        return android_data_dir() # No migration needed since it's per app
+    elif os.name == 'posix':
+        return os.path.join(os.environ["HOME"], ".factwallet")
+    elif "APPDATA" in os.environ:
+        return os.path.join(os.environ["APPDATA"], "FactWallet")
+    elif "LOCALAPPDATA" in os.environ:
+        return os.path.join(os.environ["LOCALAPPDATA"], "FactWallet")
     else:
         #raise Exception("No home directory found in environment variables.")
         return

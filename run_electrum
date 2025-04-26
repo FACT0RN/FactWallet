@@ -106,6 +106,7 @@ from electrum import daemon
 from electrum import keystore
 from electrum.util import create_and_start_event_loop
 from electrum.i18n import set_language
+from electrum import migration
 
 if TYPE_CHECKING:
     import threading
@@ -344,7 +345,7 @@ def main():
     if config_options.get('portable'):
         if is_local:
             # running from git clone or local source: put datadir next to main script
-            datadir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'electrum_data')
+            datadir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'factwallet_data')
         else:
             # Running a binary or installed source. The most generic but still reasonable thing
             # is to use the current working directory. (see #7732)
@@ -352,8 +353,12 @@ def main():
             #       and we don't want to put the datadir inside a temp dir.
             # note: Re the portable .exe on Windows, when the user double-clicks it, CWD gets set
             #       to the parent dir, i.e. we will put the datadir next to the exe.
-            datadir = os.path.join(os.path.realpath(cwd), 'electrum_data')
+            datadir = os.path.join(os.path.realpath(cwd), 'factwallet_data')
         config_options['electrum_path'] = datadir
+
+    # Check if migration from Electrum to FactWallet data directory is needed
+    # Only do this after -D/--dir and portable mode is handled and before a config is created
+    migration.check_for_migration(config_options)
 
     if not config_options.get('verbosity'):
         warnings.simplefilter('ignore', DeprecationWarning)
